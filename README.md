@@ -14,28 +14,27 @@ A full-stack application using AI for legal document upload, analysis, research,
 
 ## Tech Stack
 
-### Backend (`backend/` - Main Service - Assumed)
--   FastAPI (Python web framework)
--   MongoDB (Database - Assumed from original README)
--   JWT Authentication
--   OpenAI / Google AI integration (for features other than search)
--   `uv` for package management
+### Backend Services
+1. **Main Backend (`backend/`)**
+   - FastAPI (Python web framework)
+   - MongoDB (Database)
+   - JWT Authentication
+   - OpenAI/Google AI integration
 
-### Backend (`legal_search_service/` - Search Service)
--   FastAPI (Python web framework)
--   **Qdrant** (Vector Database)
--   **Sentence Transformers** (for text embeddings)
--   **LlamaParse** (for document parsing)
--   **OpenAI / DeepSeek** (Configurable, for RAG answer generation)
--   `uv` / `pip` for package management
+2. **Search Service (`legal_search_service/`)**
+   - FastAPI
+   - Qdrant (Vector Database)
+   - Sentence Transformers (text embeddings)
+   - LlamaParse (document parsing)
+   - OpenAI/DeepSeek (RAG answer generation)
 
 ### Frontend (`frontend/`)
--   React
--   Material-UI
--   Redux Toolkit
--   Axios for API calls
--   React Router for navigation
--   React Dropzone (for file uploads)
+- React
+- Material-UI
+- Redux Toolkit
+- Axios
+- React Router
+- React Dropzone
 
 ## Prerequisites
 
@@ -52,232 +51,175 @@ A full-stack application using AI for legal document upload, analysis, research,
     -   *Optional* LlamaParse API Key for advanced document parsing features.
 -   **MongoDB:** Needs to be running if used by the main `backend` service.
 
-## Setup
+## Quick Start
 
-### 1. Clone the Repository
+1. Clone the repository:
 ```bash
-git clone <your-repository-url>
-cd <your-repository-directory>
+git clone https://github.com/imvenkata/legal_app.git
+cd legal_app
 ```
 
-### 2. Install uv (Python Package Manager)
-
-Follow the instructions from the original README:
+2. Set up environment variables:
 ```bash
-# Install uv
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Make sure it's in your PATH
-# For bash/zsh, add to .bashrc or .zshrc:
-# export PATH="$HOME/.local/bin:$PATH"
-# Restart your shell after adding to PATH
+# Copy environment files
+cp legal_search_service/.env.example legal_search_service/.env
+cp frontend/.env.example frontend/.env
 ```
 
-### 3. Backend Setup
+3. Edit the environment files with your API keys and configuration.
 
-This project uses two backend services. You need to set up both.
+4. Run the application using the provided script:
+```bash
+chmod +x run_local.sh
+./run_local.sh
+```
 
-**a) Main Backend Service (`backend/`)** (Based on original README structure)
+## Detailed Setup
 
-*   Navigate to the project root.
-*   Create/activate a virtual environment using `uv`:
-    ```bash
-    uv venv venv_backend  # Create a separate venv for the main backend
-    source venv_backend/bin/activate # On Windows: venv_backend\Scripts\activate
-    ```
-*   Install dependencies:
-    ```bash
-    # Assuming requirements are in backend/requirements.txt as per original README
-    uv pip sync backend/requirements.txt
-    ```
-*   Deactivate this environment for now (optional, just to avoid confusion):
-    ```bash
-    deactivate
-    ```
+### 1. Backend Setup
 
-**b) Search Backend Service (`legal_search_service/`)**
+#### Main Backend Service
+```bash
+# Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-*   Navigate to the project root.
-*   Create/activate a *separate* virtual environment using `uv`:
-    ```bash
-    # Using uv for this service as well
-    uv venv venv_search 
-    source venv_search/bin/activate # On Windows: venv_search\Scripts\activate
-    ```
-*   Install dependencies using `uv`:
-    ```bash
-    uv pip sync legal_search_service/requirements.txt
-    ```
-*   Deactivate this environment for now:
-    ```bash
-    deactivate
-    ```
+# Install dependencies
+pip install -r backend/requirements.txt
 
-### 4. Frontend Setup (`frontend/`)
+# Start the server
+cd backend
+uvicorn app:app --reload --port 8000
+```
 
-*   Install dependencies:
-    ```bash
-    cd frontend
-    npm install
-    cd .. # Go back to project root
-    ```
+#### Search Service
+```bash
+# Create and activate virtual environment
+python -m venv venv_search
+source venv_search/bin/activate  # On Windows: venv_search\Scripts\activate
 
-### 5. Configuration (.env Files)
+# Install dependencies
+pip install -r legal_search_service/requirements.txt
 
-Set up environment variables for both backend services and the frontend.
+# Start the server
+cd legal_search_service
+uvicorn api.main:app --reload --port 8001
+```
 
-**a) Main Backend (`.env` in root or `backend/`)**
+### 2. Frontend Setup
+```bash
+cd frontend
+npm install
+npm start
+```
 
-*   Copy the example file if it exists: `cp .env.example .env` (adjust path if needed).
-*   Edit the `.env` file with your specific configuration for the main backend (MongoDB connection, JWT secret, OpenAI/Google keys if used here, etc.).
+### 3. Vector Database (Qdrant)
+```bash
+# Start Qdrant using Docker
+docker run -p 6333:6333 -p 6334:6334 \
+       -v "$(pwd)/qdrant_data:/qdrant/storage" \
+       qdrant/qdrant
+```
 
-**b) Search Backend (`legal_search_service/.env`)**
+## Configuration
 
-*   Create a file named `.env` inside the `legal_search_service` directory (`legal_search_service/.env`).
-*   Add the following, **replacing placeholders**:
+### Search Service (.env)
+```env
+# Qdrant Configuration
+QDRANT_URL=http://localhost:6333
+QDRANT_API_KEY=
+COLLECTION_NAME=legal_documents
 
-    ```dotenv
-    # --- Qdrant Configuration ---
-    QDRANT_URL=http://localhost:6333
-    QDRANT_API_KEY=
-    COLLECTION_NAME=legal_documents
+# Embedding Model
+EMBEDDING_MODEL_NAME=all-MiniLM-L6-v2
 
-    # --- Embedding Model ---
-    EMBEDDING_MODEL_NAME=all-MiniLM-L6-v2
+# LlamaParse (Optional)
+LLAMA_CLOUD_API_KEY=
 
-    # --- LlamaParse (Optional) ---
-    LLAMA_CLOUD_API_KEY=
+# OpenAI LLM
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_MODEL_NAME=gpt-4
 
-    # --- OpenAI LLM --- (Required if LLM_PROVIDER=openai)
-    OPENAI_API_KEY=your_openai_api_key_here 
-    OPENAI_MODEL_NAME=gpt-4o
-    
-    # --- DeepSeek LLM --- (Required if LLM_PROVIDER=deepseek)
-    DEEPSEEK_API_KEY=your_deepseek_api_key_here
-    DEEPSEEK_MODEL_NAME=deepseek-chat # Or deepseek-coder
-    DEEPSEEK_BASE_URL=https://api.deepseek.com/v1 # Verify this URL
+# DeepSeek LLM
+DEEPSEEK_API_KEY=your_deepseek_api_key_here
+DEEPSEEK_MODEL_NAME=deepseek-chat
+DEEPSEEK_BASE_URL=https://api.deepseek.com/v1
 
-    # --- LLM Selection ---
-    LLM_PROVIDER=deepseek # Options: "openai", "deepseek"
+# LLM Selection
+LLM_PROVIDER=deepseek  # Options: "openai", "deepseek"
 
-    # --- Data Path ---
-    DATA_PATH=./data
-    ```
+# Data Path
+DATA_PATH=./data
+```
 
-**c) Frontend (`frontend/.env`)**
+### Frontend (.env)
+```env
+REACT_APP_SEARCH_API_URL=http://localhost:8001/api/v1
+REACT_APP_API_URL=http://localhost:8000
+```
 
-*   Copy the example file if it exists: `cd frontend; cp .env.example .env; cd ..`.
-*   Edit `frontend/.env` and ensure these variables are present and correct:
+## Service Endpoints
 
-    ```dotenv
-    REACT_APP_SEARCH_API_URL=http://localhost:8001/api/v1 # URL for the Search Service
-    REACT_APP_API_URL=http://localhost:8000              # URL for the Main Backend (adjust if needed)
-    ```
+### Main Backend (Port 8000)
+- Health Check: `GET /health`
+- Authentication: `POST /auth/login`
+- Documents: `GET /documents`
+- Research: `POST /research/search`
+- Contracts: `GET /contracts/templates`
 
-## Running the Application
+### Search Service (Port 8001)
+- Health Check: `GET /api/v1/health`
+- Document Upload: `POST /api/v1/documents/upload`
+- Search: `POST /api/v1/search`
+- Documents: `GET /api/v1/documents`
 
-Start the services in separate terminals from the **project root directory**.
-
-1.  **Start Qdrant (Vector Database via Docker):**
-    *   *(Terminal 1)*
-    *   Qdrant is used as the vector database. The easiest way to run it locally is using Docker.
-    *   Run the official Qdrant image, mapping the necessary ports (6333 for HTTP, 6334 for gRPC) and mounting a volume for data persistence:
-    ```bash
-    docker run -p 6333:6333 -p 6334:6334 \
-           -v "$(pwd)/qdrant_data:/qdrant/storage:z" \
-           qdrant/qdrant
-    ```
-    *   **Note:** The `-v "$(pwd)/qdrant_data:/qdrant/storage:z"` part mounts a directory named `qdrant_data` from your current project root into the container. This ensures your indexed data persists even if you stop and restart the container. Create this `qdrant_data` directory if it doesn't exist. `$(pwd)` works on Linux/macOS/Git Bash; adjust the path before `/qdrant_data` if needed for other shells.
-    *   Leave this terminal running. Qdrant will be accessible at `http://localhost:6333`.
-
-
-    Qdrant is now accessible:
-
-    REST API: localhost:6333
-    Web UI: localhost:6333/dashboard
-    GRPC API: localhost:6334
-
-
-
-2.  **Start Main Backend Service:** (If applicable)
-    *   *(Terminal 2)*
-    *   Activate the main backend virtual environment: `source venv_backend/bin/activate`
-    *   Run the server (adjust `app:app` if your entry point differs):
-        ```bash
-        uvicorn backend.app:app --reload --port 8000 # Assuming entry point is backend/app.py
-        ```
-    *   Leave this running.
-
-3.  **Start Search Backend Service:**
-    *   *(Terminal 3)*
-    *   Activate the search service virtual environment: `source venv_search/bin/activate`
-    *   Run the server:
-        ```bash
-        uvicorn legal_search_service.api.main:app --reload --port 8001
-        ```
-    *   Leave this running.
-
-4.  **Start Frontend:**
-    *   *(Terminal 4)*
-    *   Navigate to the frontend directory: `cd frontend`
-    *   Start the React app:
-        ```bash
-        npm start
-        ```
-    *   This should open `http://localhost:3000` (or similar) in your browser.
-
-## Using the Application
-
-1.  **Upload Documents:**
-    *   Navigate to the `/documents` page.
-    *   Use the "Upload Documents for Search Indexing" section (drag & drop or click).
-    *   Select files (PDF, DOCX, TXT) and click "Upload".
-    *   Ingestion (parsing, embedding, indexing) will start in the background.
-
-2.  **Ask Questions (RAG Search):**
-    *   Navigate to the `/research` page.
-    *   Use the "Ask a Legal Question (RAG)" input.
-    *   Type your question related to the uploaded documents and click "Ask".
-    *   The app retrieves relevant context and uses the configured LLM to generate an answer with citations.
+### Qdrant (Port 6333)
+- REST API: `http://localhost:6333`
+- Web UI: `http://localhost:6333/dashboard`
+- gRPC API: `localhost:6334`
 
 ## Development
 
-*(Keep relevant sections from original README regarding uv usage for main backend, testing, code style, etc.)*
-
-### Package Management with uv (Main Backend)
-```bash
-# Activate main backend venv first
-# uv pip add package_name
-# uv pip sync backend/requirements.txt
-# uv pip freeze > backend/requirements.txt
-```
-
 ### Running Tests
 ```bash
-# Activate relevant venv first
-# cd backend; pytest
-# cd frontend; npm test
+# Backend tests
+cd backend
+pytest
+
+# Search service tests
+cd legal_search_service
+pytest
 ```
 
 ### Code Style
-```bash
-# Activate relevant venv first
-# cd backend; black .; isort .; flake8
-# cd frontend; npm run lint
-```
+- Backend: Follow PEP 8
+- Frontend: ESLint configuration provided
 
-## Deployment
+## Troubleshooting
 
-*(Keep relevant sections from original README, potentially needing updates for deploying multiple backends and Qdrant)*
+1. **Qdrant Connection Issues**
+   - Ensure Docker is running
+   - Check if ports 6333 and 6334 are available
+   - Verify volume mount permissions
 
-## Security Considerations
+2. **API Key Issues**
+   - Verify API keys in .env files
+   - Check API key permissions
+   - Ensure correct environment variables are loaded
 
-*(Keep relevant sections from original README)*
+3. **Frontend-Backend Connection**
+   - Verify API URLs in frontend/.env
+   - Check CORS settings in backend
+   - Ensure all services are running
 
 ## Contributing
 
-*(Keep relevant sections from original README)*
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
 ## License
 
-*(Keep relevant sections from original README)* 
+[Your License Here] 
