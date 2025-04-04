@@ -1,0 +1,17 @@
+CASE BRIEF: Smith v. Jones (2023)
+
+FACTS:
+On January 10, 2023, Smith entered into a contract with Jones for the delivery of 1,000 custom widgets by March 15, 2023, for a total price of $50,000. Smith paid a 50% deposit ($25,000) upon signing the contract. The contract specified that time was of the essence and included a clause stating that any delay in delivery would result in liquidated damages of $500 per day. Jones delivered the widgets on April 10, 2023, 26 days late. Smith refused to pay the remaining $25,000 and demanded a refund of $13,000 (26 days × $500) from the initial deposit. Jones argued that the delay was caused by supply chain issues beyond his control and refused to pay the liquidated damages.
+
+LEGAL ISSUES:
+1. Is Jones liable for breach of contract?
+2. Are the liquidated damages enforceable?
+3. Does Jones have a valid defense based on supply chain issues?
+
+RELEVANT LAW:
+- Uniform Commercial Code § 2-615 (Excuse by Failure of Presupposed Conditions)
+- Restatement (Second) of Contracts § 356 (Liquidated Damages and Penalties)
+- Local precedent: Wilson Corp v. Allen Inc (2022) - Court found that supply chain issues during post-pandemic period could constitute force majeure if properly documented
+
+ARGUMENTS:
+Smith argues that the contract terms were clear, time was of the essence, and the liquidated damages are reasonable given the nature of the custom widgets and their importance to Smith's business operations. Jones argues that the supply chain issues were unforeseeable and beyond his control, constituting a force majeure event that should excuse the delay in performance.

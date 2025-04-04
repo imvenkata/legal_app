@@ -1,0 +1,47 @@
+EMPLOYMENT AGREEMENT
+
+THIS AGREEMENT is made on January 15, 2025,
+
+BETWEEN:
+ABC Corporation, with an address at 123 Business Ave, Metropolis ("Employer"),
+
+AND:
+John Smith, with an address at 456 Residential St, Metropolis ("Employee").
+
+WHEREAS, the Employer desires to employ the Employee, and the Employee desires to accept employment with the Employer, under the terms and conditions set forth in this Agreement,
+
+NOW, THEREFORE, in consideration of the mutual covenants contained herein, the parties agree as follows:
+
+1. POSITION AND DUTIES
+The Employer hereby employs the Employee as Senior Software Developer, and the Employee hereby accepts such employment. The Employee shall perform such duties as are customarily performed by someone in such position and such other duties as may be assigned from time to time by the Employer.
+
+2. TERM
+This Agreement shall commence on February 1, 2025 and continue until terminated by either party in accordance with this Agreement.
+
+3. COMPENSATION
+The Employer shall pay the Employee a salary of $120,000 per year, payable bi-weekly.
+
+4. BENEFITS
+The Employee shall be entitled to the following benefits:
+- Health insurance
+- 401(k) retirement plan
+- 15 days of paid vacation per year
+- 5 days of paid sick leave per year
+
+5. TERMINATION
+Either party may terminate this Agreement by providing the other party with at least 30 days' written notice.
+
+6. GOVERNING LAW
+This Agreement shall be governed by and construed in accordance with the laws of the State of New York.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the date first above written.
+
+ABC Corporation
+
+By: ________________________
+Name: Jane Doe
+Title: CEO
+
+John Smith
+
+By: ________________________

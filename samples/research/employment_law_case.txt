@@ -1,0 +1,17 @@
+CASE BRIEF: Johnson v. Tech Innovations LLC (2024)
+
+FACTS:
+Sarah Johnson was employed by Tech Innovations LLC as a senior software engineer from May 2020 to December 2023. Her employment contract included a non-compete clause prohibiting her from working for any competing company within a 100-mile radius for 2 years after termination. In January 2024, Johnson accepted a position with DataSoft Inc., a direct competitor located 30 miles away. Tech Innovations filed for an injunction to enforce the non-compete agreement. Johnson argues that the non-compete is overly broad and unenforceable, and that her specialized skills in AI development mean that enforcing the agreement would cause her undue hardship.
+
+LEGAL ISSUES:
+1. Is the non-compete agreement enforceable?
+2. Does the agreement impose undue hardship on Johnson?
+3. Does Tech Innovations have a legitimate business interest to protect?
+
+RELEVANT LAW:
+- State statute on non-compete agreements (varies by jurisdiction)
+- Restatement (Second) of Contracts § 188 (Restraint of Trade)
+- Local precedent: Parker LLC v. Thompson (2021) - Court held that a 2-year, 50-mile radius non-compete for a software developer was reasonable
+
+ARGUMENTS:
+Tech Innovations argues that the non-compete is reasonable in scope and necessary to protect their proprietary AI algorithms and client relationships. Johnson argues that the 100-mile radius is excessive given the nature of remote work in the software industry, and that her specialized skills mean she cannot find comparable employment outside the restricted area without relocating her family.

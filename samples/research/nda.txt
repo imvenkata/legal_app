@@ -1,0 +1,45 @@
+NON-DISCLOSURE AGREEMENT
+
+THIS AGREEMENT is made on March 10, 2025,
+
+BETWEEN:
+XYZ Inc., with an address at 789 Corporate Blvd, Metropolis ("Disclosing Party"),
+
+AND:
+ABC Corporation, with an address at 123 Business Ave, Metropolis ("Receiving Party").
+
+WHEREAS, the Disclosing Party possesses certain confidential and proprietary information, and
+
+WHEREAS, the Receiving Party is willing to receive and hold such confidential information in confidence under the terms of this Agreement,
+
+NOW, THEREFORE, in consideration of the mutual covenants contained herein, the parties agree as follows:
+
+1. DEFINITION OF CONFIDENTIAL INFORMATION
+"Confidential Information" means any information disclosed by the Disclosing Party to the Receiving Party, either directly or indirectly, in writing, orally or by inspection of tangible objects, which is designated as "Confidential," "Proprietary" or some similar designation, or that should reasonably be understood to be confidential given the nature of the information and the circumstances of disclosure.
+
+2. OBLIGATIONS OF RECEIVING PARTY
+The Receiving Party shall:
+(a) Use the Confidential Information only for the purpose of evaluating potential business and investment relationships with the Disclosing Party;
+(b) Hold the Confidential Information in strict confidence and take reasonable precautions to protect such Confidential Information;
+(c) Not disclose any Confidential Information to any third party without the prior written consent of the Disclosing Party;
+(d) Not copy or reproduce any Confidential Information without the prior written consent of the Disclosing Party.
+
+3. TERM
+This Agreement shall remain in effect for a period of 24 months from the Effective Date.
+
+4. GOVERNING LAW
+This Agreement shall be governed by and construed in accordance with the laws of the State of California.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the date first above written.
+
+XYZ Inc.
+
+By: ________________________
+Name: Robert Johnson
+Title: President
+
+ABC Corporation
+
+By: ________________________
+Name: Jane Doe
+Title: CEO
