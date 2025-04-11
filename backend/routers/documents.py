@@ -234,8 +234,10 @@ async def analyze_document(file_path: Path) -> Dict[str, Any]:
             async with aiofiles.open(file_path, 'r', encoding='utf-8', errors='replace') as f:
                 text = await f.read()
         
-        # Create a summary (first 200 chars)
-        summary = text[:200] + "..." if len(text) > 200 else text
+        # Create a summary (first 3 sentences)
+        sentences = re.split(r'[.!?]', text)
+        sentences = [s.strip() for s in sentences if len(s.strip()) > 10] # Filter out short/empty sentences
+        summary = ". ".join(sentences[:3]) + "." if sentences else text[:500] # Use first 3 sentences or fallback to 500 chars
         
         # Extract key points
         key_points = extract_key_points(text)
