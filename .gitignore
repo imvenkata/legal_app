@@ -1,3 +1,27 @@
 .qodo
 /venv/
+/venv_search/
 legal_search_service/data/
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+
+# Node.js
+node_modules/
+.npm
+*.log
+frontend/node_modules/
+frontend/.cache/
+frontend/build/
+frontend/dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
