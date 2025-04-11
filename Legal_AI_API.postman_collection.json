@@ -1,0 +1,177 @@
+{
+	"info": {
+		"_postman_id": "your-collection-id",
+		"name": "Legal AI API",
+		"description": "Collection for testing Legal AI API endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "john@example.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "securepassword123",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8000/auth/login",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8000",
+							"path": ["auth", "login"]
+						},
+						"description": "Login to get authentication token\n\nExample Response:\n```json\n{\n    \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"token_type\": \"bearer\",\n    \"user\": {\n        \"id\": \"67f967656557d4f1034a3c9f\",\n        \"name\": \"John carter\",\n        \"email\": \"john@example.com\"\n    }\n}\n```"
+					}
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/auth/me",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8000",
+							"path": ["auth", "me"]
+						},
+						"description": "Get current user information\n\nExample Response:\n```json\n{\n    \"id\": \"67f967656557d4f1034a3c9f\",\n    \"name\": \"John carter\",\n    \"email\": \"john@example.com\"\n}\n```"
+					}
+				}
+			]
+		},
+		{
+			"name": "Documents",
+			"item": [
+				{
+					"name": "Upload Document",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "title",
+									"value": "Trademark Assignment Document",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Sample trademark assignment document for testing",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8000/api/documents/upload",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8000",
+							"path": ["api", "documents", "upload"]
+						},
+						"description": "Upload a document for analysis\n\nExample Response:\n```json\n{\n    \"title\": \"Trademark Assignment Document\",\n    \"description\": \"Sample trademark assignment document for testing\",\n    \"id\": \"1\",\n    \"file_path\": \"uploads/20250411_202301_20250403_180359_Trademark-Assignment.pdf\",\n    \"file_type\": \"pdf\",\n    \"status\": \"uploaded\",\n    \"created_at\": \"2025-04-11T20:23:01.303344\"\n}\n```"
+					}
+				},
+				{
+					"name": "Analyze Document",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"model\": \"document-analyzer\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/api/documents/1/analyze",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8000",
+							"path": ["api", "documents", "1", "analyze"]
+						},
+						"description": "Analyze a document\n\nExample Response:\n```json\n{\n    \"document_id\": \"1\",\n    \"summary\": \"TRADEMARK ASSIGNMENT...\",\n    \"key_points\": [\n        \"BETWEEN Assignor and Assignee...\",\n        \"The Assignee will pay to the Assignor...\"\n    ],\n    \"risks\": [\n        \"The Assignor is not aware of any competing claims...\"\n    ],\n    \"entities\": [\n        {\n            \"name\": \"Trademark Assignment\",\n            \"type\": \"person\",\n            \"mentions\": [\"Found in document\"]\n        }\n    ],\n    \"model\": \"document-analyzer\"\n}\n```"
+					}
+				},
+				{
+					"name": "Chat with Document",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"query\": \"What is the purpose of this document?\",\n    \"model\": \"document-analyzer\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/api/documents/1/chat",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8000",
+							"path": ["api", "documents", "1", "chat"]
+						},
+						"description": "Chat with a document\n\nExample Response:\n```json\n{\n    \"document_id\": \"1\",\n    \"response\": \"I found the following relevant information in the document:\\n\\n1. TRADEMARK ASSIGNMENT...\",\n    \"messages\": [\n        {\n            \"role\": \"user\",\n            \"content\": \"What is the purpose of this document?\"\n        },\n        {\n            \"role\": \"assistant\",\n            \"content\": \"I found the following relevant information...\"\n        }\n    ]\n}\n```"
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "auth_token",
+			"value": "your_token_here"
+		}
+	]
+} 

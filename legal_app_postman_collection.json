@@ -1,0 +1,428 @@
+{
+	"info": {
+		"_postman_id": "legal-app-collection",
+		"name": "Legal App API",
+		"description": "Collection of API endpoints for the Legal App",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john@example.com\",\n    \"password\": \"securepassword123\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/auth/register",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8000",
+							"path": ["auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "john@example.com"
+								},
+								{
+									"key": "password",
+									"value": "securepassword123"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8000/auth/login",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8000",
+							"path": ["auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/auth/me",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8000",
+							"path": ["auth", "me"]
+						}
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/auth/logout",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8000",
+							"path": ["auth", "logout"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Documents",
+			"item": [
+				{
+					"name": "Upload Document",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "title",
+									"value": "Sample Document",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "This is a sample document",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8000/documents/upload",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8000",
+							"path": ["documents", "upload"]
+						}
+					}
+				},
+				{
+					"name": "Analyze Document",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"model\": \"document-analyzer\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/documents/{{document_id}}/analyze",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8000",
+							"path": ["documents", "{{document_id}}", "analyze"]
+						}
+					}
+				},
+				{
+					"name": "Chat with Document",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"query\": \"What are the main points in this document?\",\n    \"model\": \"document-analyzer\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/documents/{{document_id}}/chat",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8000",
+							"path": ["documents", "{{document_id}}", "chat"]
+						}
+					}
+				},
+				{
+					"name": "Get Chat History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/documents/{{document_id}}/chat_history",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8000",
+							"path": ["documents", "{{document_id}}", "chat_history"]
+						}
+					}
+				},
+				{
+					"name": "Get All Documents",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/documents",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8000",
+							"path": ["documents"]
+						}
+					}
+				},
+				{
+					"name": "Get Document by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/documents/{{document_id}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8000",
+							"path": ["documents", "{{document_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Contracts",
+			"item": [
+				{
+					"name": "Get Contract Templates",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/contracts/templates",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8000",
+							"path": ["contracts", "templates"]
+						}
+					}
+				},
+				{
+					"name": "Generate Contract",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"template_id\": \"nda\",\n    \"parameters\": {\n        \"party_1_name\": \"Acme Corp\",\n        \"party_1_address\": \"123 Main St, City, State\",\n        \"party_2_name\": \"John Doe\",\n        \"party_2_address\": \"456 Oak Ave, City, State\",\n        \"effective_date\": \"2024-04-11\",\n        \"term_months\": 12,\n        \"governing_law\": \"California\"\n    },\n    \"llm_model\": \"gpt-4\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/contracts/generate",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8000",
+							"path": ["contracts", "generate"]
+						}
+					}
+				},
+				{
+					"name": "Get All Contracts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/contracts",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8000",
+							"path": ["contracts"]
+						}
+					}
+				},
+				{
+					"name": "Get Contract by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/contracts/{{contract_id}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8000",
+							"path": ["contracts", "{{contract_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Research",
+			"item": [
+				{
+					"name": "Search Cases",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"query\": \"contract breach\",\n    \"filters\": {\n        \"year\": 2023,\n        \"jurisdiction\": \"federal\"\n    }\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/research/search",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8000",
+							"path": ["research", "search"]
+						}
+					}
+				},
+				{
+					"name": "Predict Outcome",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"case_details\": {\n        \"type\": \"contract_dispute\",\n        \"jurisdiction\": \"federal\",\n        \"parties\": [\"Acme Corp\", \"XYZ Inc\"],\n        \"claims\": [\"breach of contract\", \"fraud\"],\n        \"damages\": 100000,\n        \"evidence\": [\"written contract\", \"email communications\", \"payment records\"]\n    },\n    \"llm_model\": \"gpt-4\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/research/predict",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8000",
+							"path": ["research", "predict"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "document_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "contract_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+} 
