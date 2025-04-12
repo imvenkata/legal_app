@@ -128,17 +128,38 @@ class DeepSeekAdapter(BaseLLMAdapter):
             placeholder = f"{{{key}}}"
             contract_template = contract_template.replace(placeholder, str(value))
         
-        # For this demo, we'll return a simulated contract
-        return f"""
+        # For simplicity, let's use a template with format method instead of f-string
+        effective_date = parameters.get('effective_date', 'March 26, 2025')
+        party_1_name = parameters.get('party_1_name', 'ACME CONSULTING LLC')
+        party_1_jurisdiction = parameters.get('party_1_jurisdiction', 'Delaware')
+        party_1_address = parameters.get('party_1_address', '123 Business Ave, Suite 100, New York, NY 10001')
+        party_2_name = parameters.get('party_2_name', 'CLIENT CORPORATION')
+        party_2_jurisdiction = parameters.get('party_2_jurisdiction', 'California')
+        party_2_address = parameters.get('party_2_address', '456 Corporate Drive, San Francisco, CA 94105')
+        services_description = parameters.get('services_description', 'Professional consulting services in the field of business strategy and operations optimization.')
+        delivery_schedule = parameters.get('delivery_schedule', 'As outlined in Exhibit A, attached hereto and incorporated by reference.')
+        start_date = parameters.get('start_date', 'April 1, 2025')
+        end_date = parameters.get('end_date', 'March 31, 2026')
+        compensation_amount = parameters.get('compensation_amount', '$10,000 per month')
+        payment_terms = parameters.get('payment_terms', "Payment shall be made within thirty (30) days of receipt of Consultant's invoice.")
+        expense_terms = parameters.get('expense_terms', "Client shall reimburse Consultant for all reasonable and necessary expenses incurred in connection with the Services, provided that Consultant obtains Client's prior written approval for any expense exceeding $500.")
+        ip_terms = parameters.get('ip_terms', 'All intellectual property created by Consultant in connection with the Services shall be the property of Client.')
+        governing_law = parameters.get('governing_law', 'the State of New York')
+        party_1_signatory = parameters.get('party_1_signatory', 'John Smith')
+        party_1_title = parameters.get('party_1_title', 'Managing Partner')
+        party_2_signatory = parameters.get('party_2_signatory', 'Jane Doe')
+        party_2_title = parameters.get('party_2_title', 'Chief Executive Officer')
+        
+        return """
         CONSULTING SERVICES AGREEMENT
         
-        THIS AGREEMENT is made on {parameters.get('effective_date', 'March 26, 2025')},
+        THIS AGREEMENT is made on {effective_date},
         
         BETWEEN:
-        {parameters.get('party_1_name', 'ACME CONSULTING LLC')}, a company organized under the laws of {parameters.get('party_1_jurisdiction', 'Delaware')}, with its principal place of business at {parameters.get('party_1_address', '123 Business Ave, Suite 100, New York, NY 10001')} ("Consultant"),
+        {party_1_name}, a company organized under the laws of {party_1_jurisdiction}, with its principal place of business at {party_1_address} ("Consultant"),
         
         AND:
-        {parameters.get('party_2_name', 'CLIENT CORPORATION')}, a company organized under the laws of {parameters.get('party_2_jurisdiction', 'California')}, with its principal place of business at {parameters.get('party_2_address', '456 Corporate Drive, San Francisco, CA 94105')} ("Client").
+        {party_2_name}, a company organized under the laws of {party_2_jurisdiction}, with its principal place of business at {party_2_address} ("Client").
         
         WHEREAS, Client wishes to obtain the services of Consultant to perform certain consulting services; and
         
@@ -149,24 +170,24 @@ class DeepSeekAdapter(BaseLLMAdapter):
         1. CONSULTING SERVICES
         
         1.1 Services. Consultant shall provide to Client the following services (the "Services"):
-        {parameters.get('services_description', 'Professional consulting services in the field of business strategy and operations optimization.')}
+        {services_description}
         
         1.2 Delivery. Consultant shall deliver the Services according to the following schedule:
-        {parameters.get('delivery_schedule', 'As outlined in Exhibit A, attached hereto and incorporated by reference.')}
+        {delivery_schedule}
         
         2. TERM
         
-        2.1 Term. This Agreement shall commence on {parameters.get('start_date', 'April 1, 2025')} and continue until {parameters.get('end_date', 'March 31, 2026')}, unless terminated earlier in accordance with Section 2.2.
+        2.1 Term. This Agreement shall commence on {start_date} and continue until {end_date}, unless terminated earlier in accordance with Section 2.2.
         
         2.2 Termination. Either party may terminate this Agreement upon thirty (30) days written notice to the other party.
         
         3. COMPENSATION
         
-        3.1 Fees. Client shall pay Consultant {parameters.get('compensation_amount', '$10,000 per month')} for the Services.
+        3.1 Fees. Client shall pay Consultant {compensation_amount} for the Services.
         
-        3.2 Payment Terms. {parameters.get('payment_terms', 'Payment shall be made within thirty (30) days of receipt of Consultant\'s invoice.')}
+        3.2 Payment Terms. {payment_terms}
         
-        3.3 Expenses. {parameters.get('expense_terms', 'Client shall reimburse Consultant for all reasonable and necessary expenses incurred in connection with the Services, provided that Consultant obtains Client\'s prior written approval for any expense exceeding $500.')}
+        3.3 Expenses. {expense_terms}
         
         4. CONFIDENTIALITY
         
@@ -174,23 +195,44 @@ class DeepSeekAdapter(BaseLLMAdapter):
         
         5. INTELLECTUAL PROPERTY
         
-        5.1 Ownership. {parameters.get('ip_terms', 'All intellectual property created by Consultant in connection with the Services shall be the property of Client.')}
+        5.1 Ownership. {ip_terms}
         
         6. GOVERNING LAW
         
-        6.1 This Agreement shall be governed by and construed in accordance with the laws of {parameters.get('governing_law', 'the State of New York')}.
+        6.1 This Agreement shall be governed by and construed in accordance with the laws of {governing_law}.
         
         IN WITNESS WHEREOF, the parties have executed this Agreement as of the date first above written.
         
-        {parameters.get('party_1_name', 'ACME CONSULTING LLC')}
+        {party_1_name}
         
         By: ________________________
-        Name: {parameters.get('party_1_signatory', 'John Smith')}
-        Title: {parameters.get('party_1_title', 'Managing Partner')}
+        Name: {party_1_signatory}
+        Title: {party_1_title}
         
-        {parameters.get('party_2_name', 'CLIENT CORPORATION')}
+        {party_2_name}
         
         By: ________________________
-        Name: {parameters.get('party_2_signatory', 'Jane Doe')}
-        Title: {parameters.get('party_2_title', 'Chief Executive Officer')}
-        """
+        Name: {party_2_signatory}
+        Title: {party_2_title}
+        """.format(
+            effective_date=effective_date,
+            party_1_name=party_1_name,
+            party_1_jurisdiction=party_1_jurisdiction,
+            party_1_address=party_1_address,
+            party_2_name=party_2_name,
+            party_2_jurisdiction=party_2_jurisdiction,
+            party_2_address=party_2_address,
+            services_description=services_description,
+            delivery_schedule=delivery_schedule,
+            start_date=start_date,
+            end_date=end_date,
+            compensation_amount=compensation_amount,
+            payment_terms=payment_terms,
+            expense_terms=expense_terms,
+            ip_terms=ip_terms,
+            governing_law=governing_law,
+            party_1_signatory=party_1_signatory,
+            party_1_title=party_1_title,
+            party_2_signatory=party_2_signatory,
+            party_2_title=party_2_title
+        )

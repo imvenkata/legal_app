@@ -24,12 +24,13 @@
 							"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john@example.com\",\n    \"password\": \"securepassword123\"\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8000/auth/register",
+							"raw": "http://localhost:8000/api/users/register",
 							"protocol": "http",
 							"host": ["localhost"],
 							"port": "8000",
-							"path": ["auth", "register"]
-						}
+							"path": ["api", "users", "register"]
+						},
+						"description": "Register a new user account\n\nExample Response:\n```json\n{\n    \"message\": \"User registered successfully\",\n    \"id\": \"67f967656557d4f1034a3c9f\"\n}\n```"
 					}
 				},
 				{
@@ -56,12 +57,13 @@
 							]
 						},
 						"url": {
-							"raw": "http://localhost:8000/auth/login",
+							"raw": "http://localhost:8000/api/users/login",
 							"protocol": "http",
 							"host": ["localhost"],
 							"port": "8000",
-							"path": ["auth", "login"]
-						}
+							"path": ["api", "users", "login"]
+						},
+						"description": "Login to get authentication token\n\nExample Response:\n```json\n{\n    \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"token_type\": \"bearer\",\n    \"user\": {\n        \"id\": \"67f967656557d4f1034a3c9f\",\n        \"name\": \"John Doe\",\n        \"email\": \"john@example.com\"\n    }\n}\n```"
 					}
 				},
 				{
@@ -75,12 +77,13 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8000/auth/me",
+							"raw": "http://localhost:8000/api/users/me",
 							"protocol": "http",
 							"host": ["localhost"],
 							"port": "8000",
-							"path": ["auth", "me"]
-						}
+							"path": ["api", "users", "me"]
+						},
+						"description": "Get current user information\n\nExample Response:\n```json\n{\n    \"id\": \"67f967656557d4f1034a3c9f\",\n    \"name\": \"John Doe\",\n    \"email\": \"john@example.com\"\n}\n```"
 					}
 				},
 				{
@@ -94,12 +97,13 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8000/auth/logout",
+							"raw": "http://localhost:8000/api/users/logout",
 							"protocol": "http",
 							"host": ["localhost"],
 							"port": "8000",
-							"path": ["auth", "logout"]
-						}
+							"path": ["api", "users", "logout"]
+						},
+						"description": "Logout and invalidate the current token\n\nExample Response:\n```json\n{\n    \"message\": \"Successfully logged out\"\n}\n```"
 					}
 				}
 			]
@@ -127,23 +131,24 @@
 								},
 								{
 									"key": "title",
-									"value": "Sample Document",
+									"value": "Sample Contract",
 									"type": "text"
 								},
 								{
 									"key": "description",
-									"value": "This is a sample document",
+									"value": "This is a sample contract document",
 									"type": "text"
 								}
 							]
 						},
 						"url": {
-							"raw": "http://localhost:8000/documents/upload",
+							"raw": "http://localhost:8000/api/documents/upload",
 							"protocol": "http",
 							"host": ["localhost"],
 							"port": "8000",
-							"path": ["documents", "upload"]
-						}
+							"path": ["api", "documents", "upload"]
+						},
+						"description": "Upload a document for analysis\n\nExample Response:\n```json\n{\n    \"title\": \"Sample Contract\",\n    \"description\": \"This is a sample contract document\",\n    \"id\": \"1\",\n    \"file_path\": \"uploads/20250411_202301_contract.pdf\",\n    \"file_type\": \"pdf\",\n    \"status\": \"uploaded\",\n    \"created_at\": \"2025-04-11T20:23:01.303344\"\n}\n```"
 					}
 				},
 				{
@@ -165,12 +170,13 @@
 							"raw": "{\n    \"model\": \"document-analyzer\"\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8000/documents/{{document_id}}/analyze",
+							"raw": "http://localhost:8000/api/documents/{{document_id}}/analyze",
 							"protocol": "http",
 							"host": ["localhost"],
 							"port": "8000",
-							"path": ["documents", "{{document_id}}", "analyze"]
-						}
+							"path": ["api", "documents", "{{document_id}}", "analyze"]
+						},
+						"description": "Analyze a document to extract key information\n\nExample Response:\n```json\n{\n    \"document_id\": \"1\",\n    \"summary\": \"This contract establishes an agreement between Party A and Party B for the provision of consulting services. Party A agrees to provide expertise in legal document analysis, and Party B agrees to pay for these services according to the fee schedule outlined in Appendix A.\",\n    \"key_points\": [\n        \"The contract term is 12 months with automatic renewal unless terminated with 30 days notice\",\n        \"Party A must maintain confidentiality of all client information\",\n        \"Party B shall pay invoices within 30 days of receipt\",\n        \"Disputes shall be resolved through arbitration in New York\",\n        \"Either party may terminate with 30 days written notice\"\n    ],\n    \"risks\": [\n        \"No limitation of liability clause for Party A\",\n        \"Indemnification clause may be overly broad\",\n        \"Payment terms do not address late payments\"\n    ],\n    \"entities\": [\n        {\n            \"name\": \"Party A\",\n            \"type\": \"organization\",\n            \"mentions\": [\"Found in document\"]\n        },\n        {\n            \"name\": \"Party B\",\n            \"type\": \"organization\",\n            \"mentions\": [\"Found in document\"]\n        },\n        {\n            \"name\": \"John Smith\",\n            \"type\": \"person\",\n            \"mentions\": [\"Found in document\"]\n        }\n    ],\n    \"model\": \"document-analyzer\"\n}\n```"
 					}
 				},
 				{
@@ -192,12 +198,13 @@
 							"raw": "{\n    \"query\": \"What are the main points in this document?\",\n    \"model\": \"document-analyzer\"\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8000/documents/{{document_id}}/chat",
+							"raw": "http://localhost:8000/api/documents/{{document_id}}/chat",
 							"protocol": "http",
 							"host": ["localhost"],
 							"port": "8000",
-							"path": ["documents", "{{document_id}}", "chat"]
-						}
+							"path": ["api", "documents", "{{document_id}}", "chat"]
+						},
+						"description": "Chat with a document to ask questions about its content\n\nExample Response:\n```json\n{\n    \"document_id\": \"1\",\n    \"response\": \"The main points in this document are:\\n\\n1. The contract establishes a consulting relationship between Party A and Party B\\n2. The contract term is 12 months with automatic renewal unless terminated\\n3. Party A must maintain confidentiality of all client information\\n4. Party B shall pay invoices within 30 days of receipt\\n5. Disputes shall be resolved through arbitration in New York\\n6. Either party may terminate with 30 days written notice\",\n    \"messages\": [\n        {\n            \"role\": \"user\",\n            \"content\": \"What are the main points in this document?\"\n        },\n        {\n            \"role\": \"assistant\",\n            \"content\": \"The main points in this document are:\\n\\n1. The contract establishes a consulting relationship between Party A and Party B\\n2. The contract term is 12 months with automatic renewal unless terminated\\n3. Party A must maintain confidentiality of all client information\\n4. Party B shall pay invoices within 30 days of receipt\\n5. Disputes shall be resolved through arbitration in New York\\n6. Either party may terminate with 30 days written notice\"\n        }\n    ]\n}\n```"
 					}
 				},
 				{
@@ -211,12 +218,13 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8000/documents/{{document_id}}/chat_history",
+							"raw": "http://localhost:8000/api/documents/{{document_id}}/chat_history",
 							"protocol": "http",
 							"host": ["localhost"],
 							"port": "8000",
-							"path": ["documents", "{{document_id}}", "chat_history"]
-						}
+							"path": ["api", "documents", "{{document_id}}", "chat_history"]
+						},
+						"description": "Get chat history for a specific document\n\nExample Response:\n```json\n[\n    {\n        \"role\": \"user\",\n        \"content\": \"What are the main points in this document?\"\n    },\n    {\n        \"role\": \"assistant\",\n        \"content\": \"The main points in this document are:\\n\\n1. The contract establishes a consulting relationship...\" \n    },\n    {\n        \"role\": \"user\",\n        \"content\": \"What is the payment term?\"\n    },\n    {\n        \"role\": \"assistant\",\n        \"content\": \"According to the document, Party B shall pay invoices within 30 days of receipt.\"\n    }\n]\n```"
 					}
 				},
 				{
@@ -230,12 +238,13 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8000/documents",
+							"raw": "http://localhost:8000/api/documents",
 							"protocol": "http",
 							"host": ["localhost"],
 							"port": "8000",
-							"path": ["documents"]
-						}
+							"path": ["api", "documents"]
+						},
+						"description": "Get a list of all documents\n\nExample Response:\n```json\n[\n    {\n        \"title\": \"Sample Contract\",\n        \"description\": \"This is a sample contract document\",\n        \"id\": \"1\",\n        \"file_path\": \"uploads/20250411_202301_contract.pdf\",\n        \"file_type\": \"pdf\",\n        \"status\": \"analyzed\",\n        \"created_at\": \"2025-04-11T20:23:01.303344\"\n    },\n    {\n        \"title\": \"NDA Document\",\n        \"description\": \"Non-disclosure agreement\",\n        \"id\": \"2\",\n        \"file_path\": \"uploads/20250411_203045_nda.pdf\",\n        \"file_type\": \"pdf\",\n        \"status\": \"uploaded\",\n        \"created_at\": \"2025-04-11T20:30:45.123456\"\n    }\n]\n```"
 					}
 				},
 				{
@@ -249,12 +258,13 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8000/documents/{{document_id}}",
+							"raw": "http://localhost:8000/api/documents/{{document_id}}",
 							"protocol": "http",
 							"host": ["localhost"],
 							"port": "8000",
-							"path": ["documents", "{{document_id}}"]
-						}
+							"path": ["api", "documents", "{{document_id}}"]
+						},
+						"description": "Get a specific document by ID\n\nExample Response:\n```json\n{\n    \"title\": \"Sample Contract\",\n    \"description\": \"This is a sample contract document\",\n    \"id\": \"1\",\n    \"file_path\": \"uploads/20250411_202301_contract.pdf\",\n    \"file_type\": \"pdf\",\n    \"status\": \"analyzed\",\n    \"created_at\": \"2025-04-11T20:23:01.303344\"\n}\n```"
 					}
 				}
 			]
@@ -273,12 +283,13 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8000/contracts/templates",
+							"raw": "http://localhost:8000/api/contracts/templates",
 							"protocol": "http",
 							"host": ["localhost"],
 							"port": "8000",
-							"path": ["contracts", "templates"]
-						}
+							"path": ["api", "contracts", "templates"]
+						},
+						"description": "Get available contract templates\n\nExample Response:\n```json\n[\n    {\n        \"id\": \"nda\",\n        \"name\": \"Non-Disclosure Agreement\",\n        \"description\": \"Standard NDA template for protecting confidential information\",\n        \"parameters\": [\n            {\n                \"name\": \"party_1_name\",\n                \"description\": \"Name of the first party\",\n                \"required\": true\n            },\n            {\n                \"name\": \"party_1_address\",\n                \"description\": \"Address of the first party\",\n                \"required\": true\n            },\n            {\n                \"name\": \"party_2_name\",\n                \"description\": \"Name of the second party\",\n                \"required\": true\n            },\n            {\n                \"name\": \"party_2_address\",\n                \"description\": \"Address of the second party\",\n                \"required\": true\n            },\n            {\n                \"name\": \"effective_date\",\n                \"description\": \"Effective date of the agreement\",\n                \"required\": true\n            },\n            {\n                \"name\": \"term_months\",\n                \"description\": \"Duration of the agreement in months\",\n                \"required\": true\n            },\n            {\n                \"name\": \"governing_law\",\n                \"description\": \"State or jurisdiction whose laws govern the agreement\",\n                \"required\": true\n            }\n        ]\n    },\n    {\n        \"id\": \"employment\",\n        \"name\": \"Employment Agreement\",\n        \"description\": \"Standard employment contract for new hires\",\n        \"parameters\": [\n            {\n                \"name\": \"employer_name\",\n                \"description\": \"Name of the employer\",\n                \"required\": true\n            },\n            {\n                \"name\": \"employer_address\",\n                \"description\": \"Address of the employer\",\n                \"required\": true\n            },\n            {\n                \"name\": \"employee_name\",\n                \"description\": \"Name of the employee\",\n                \"required\": true\n            },\n            {\n                \"name\": \"employee_address\",\n                \"description\": \"Address of the employee\",\n                \"required\": true\n            },\n            {\n                \"name\": \"position\",\n                \"description\": \"Job title or position\",\n                \"required\": true\n            },\n            {\n                \"name\": \"salary\",\n                \"description\": \"Annual salary amount\",\n                \"required\": true\n            },\n            {\n                \"name\": \"start_date\",\n                \"description\": \"Employment start date\",\n                \"required\": true\n            },\n            {\n                \"name\": \"state\",\n                \"description\": \"State of employment\",\n                \"required\": true\n            }\n        ]\n    }\n]\n```"
 					}
 				},
 				{
@@ -297,15 +308,16 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"template_id\": \"nda\",\n    \"parameters\": {\n        \"party_1_name\": \"Acme Corp\",\n        \"party_1_address\": \"123 Main St, City, State\",\n        \"party_2_name\": \"John Doe\",\n        \"party_2_address\": \"456 Oak Ave, City, State\",\n        \"effective_date\": \"2024-04-11\",\n        \"term_months\": 12,\n        \"governing_law\": \"California\"\n    },\n    \"llm_model\": \"gpt-4\"\n}"
+							"raw": "{\n    \"template_id\": \"nda\",\n    \"parameters\": {\n        \"party_1_name\": \"Acme Corp\",\n        \"party_1_address\": \"123 Main St, City, State\",\n        \"party_2_name\": \"John Doe\",\n        \"party_2_address\": \"456 Oak Ave, City, State\",\n        \"effective_date\": \"2025-04-11\",\n        \"term_months\": 12,\n        \"governing_law\": \"California\"\n    },\n    \"llm_model\": \"gpt-4\"\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8000/contracts/generate",
+							"raw": "http://localhost:8000/api/contracts/generate",
 							"protocol": "http",
 							"host": ["localhost"],
 							"port": "8000",
-							"path": ["contracts", "generate"]
-						}
+							"path": ["api", "contracts", "generate"]
+						},
+						"description": "Generate a contract based on a template and parameters\n\nExample Response:\n```json\n{\n    \"id\": \"3\",\n    \"template_id\": \"nda\",\n    \"title\": \"Non-Disclosure Agreement - Acme Corp and John Doe\",\n    \"content\": \"NON-DISCLOSURE AGREEMENT\\n\\nThis Non-Disclosure Agreement (the \\\"Agreement\\\") is made and entered into as of April 11, 2025 (the \\\"Effective Date\\\") by and between:\\n\\nAcme Corp, with its principal place of business at 123 Main St, City, State (\\\"Party A\\\"),\\n\\nand\\n\\nJohn Doe, with a primary address at 456 Oak Ave, City, State (\\\"Party B\\\").\\n\\n1. PURPOSE\\n\\nThe parties wish to explore a potential business relationship (the \\\"Purpose\\\"). In connection with the Purpose, each party may disclose to the other certain confidential technical and business information that the disclosing party desires the receiving party to treat as confidential.\\n\\n2. CONFIDENTIAL INFORMATION\\n\\n\\\"Confidential Information\\\" means any information disclosed by either party to the other party, either directly or indirectly, in writing, orally or by inspection of tangible objects, which is designated as \\\"Confidential,\\\" \\\"Proprietary\\\" or some similar designation, or that should reasonably be understood to be confidential given the nature of the information and the circumstances of disclosure. Confidential Information shall not include any information which the receiving party can establish: (i) was publicly known prior to the time of disclosure; (ii) becomes publicly known after disclosure through no action or inaction of the receiving party; (iii) is already in the possession of the receiving party at the time of disclosure; (iv) is obtained by the receiving party from a third party without a breach of such third party's obligations of confidentiality; or (v) is independently developed by the receiving party without use of or reference to the disclosing party's Confidential Information.\\n\\n3. NON-DISCLOSURE\\n\\nThe receiving party shall not disclose any Confidential Information of the disclosing party to third parties for a period of twelve (12) months from the Effective Date. The receiving party shall take reasonable measures to protect the secrecy of and avoid disclosure and unauthorized use of the Confidential Information. The receiving party shall only disclose Confidential Information to its employees, directors, or third-party contractors with a need to know such information and who have signed confidentiality agreements at least as protective as the provisions of this Agreement.\\n\\n4. GOVERNING LAW\\n\\nThis Agreement shall be governed by and construed in accordance with the laws of the State of California, without regard to its conflict of law principles.\\n\\n5. TERM\\n\\nThis Agreement shall remain in effect for a period of twelve (12) months from the Effective Date, unless terminated earlier by mutual written agreement of the parties.\\n\\nIN WITNESS WHEREOF, the parties have executed this Non-Disclosure Agreement as of the Effective Date first written above.\\n\\nAcme Corp\\n\\nBy: _______________________\\nName: ____________________\\nTitle: _____________________\\n\\nJohn Doe\\n\\nBy: _______________________\",\n    \"created_at\": \"2025-04-11T21:45:30.123456\",\n    \"parameters\": {\n        \"party_1_name\": \"Acme Corp\",\n        \"party_1_address\": \"123 Main St, City, State\",\n        \"party_2_name\": \"John Doe\",\n        \"party_2_address\": \"456 Oak Ave, City, State\",\n        \"effective_date\": \"2025-04-11\",\n        \"term_months\": 12,\n        \"governing_law\": \"California\"\n    },\n    \"model\": \"gpt-4\"\n}\n```"
 					}
 				},
 				{
@@ -319,12 +331,13 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8000/contracts",
+							"raw": "http://localhost:8000/api/contracts",
 							"protocol": "http",
 							"host": ["localhost"],
 							"port": "8000",
-							"path": ["contracts"]
-						}
+							"path": ["api", "contracts"]
+						},
+						"description": "Get a list of all contracts\n\nExample Response:\n```json\n[\n    {\n        \"id\": \"3\",\n        \"template_id\": \"nda\",\n        \"title\": \"Non-Disclosure Agreement - Acme Corp and John Doe\",\n        \"content_preview\": \"NON-DISCLOSURE AGREEMENT\\n\\nThis Non-Disclosure Agreement (the \\\"Agreement\\\") is made and entered into as of...\",\n        \"created_at\": \"2025-04-11T21:45:30.123456\"\n    },\n    {\n        \"id\": \"4\",\n        \"template_id\": \"employment\",\n        \"title\": \"Employment Agreement - Tech Corp and Jane Smith\",\n        \"content_preview\": \"EMPLOYMENT AGREEMENT\\n\\nThis Employment Agreement (the \\\"Agreement\\\") is made and entered into as of...\",\n        \"created_at\": \"2025-04-11T22:30:15.654321\"\n    }\n]\n```"
 					}
 				},
 				{
@@ -338,12 +351,13 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8000/contracts/{{contract_id}}",
+							"raw": "http://localhost:8000/api/contracts/{{contract_id}}",
 							"protocol": "http",
 							"host": ["localhost"],
 							"port": "8000",
-							"path": ["contracts", "{{contract_id}}"]
-						}
+							"path": ["api", "contracts", "{{contract_id}}"]
+						},
+						"description": "Get a specific contract by ID\n\nExample Response:\n```json\n{\n    \"id\": \"3\",\n    \"template_id\": \"nda\",\n    \"title\": \"Non-Disclosure Agreement - Acme Corp and John Doe\",\n    \"content\": \"NON-DISCLOSURE AGREEMENT\\n\\nThis Non-Disclosure Agreement (the \\\"Agreement\\\") is made and entered into as of April 11, 2025 (the \\\"Effective Date\\\") by and between:\\n\\nAcme Corp, with its principal place of business at 123 Main St, City, State (\\\"Party A\\\"),\\n\\nand\\n\\nJohn Doe, with a primary address at 456 Oak Ave, City, State (\\\"Party B\\\").\\n\\n1. PURPOSE\\n\\nThe parties wish to explore a potential business relationship (the \\\"Purpose\\\"). In connection with the Purpose, each party may disclose to the other certain confidential technical and business information that the disclosing party desires the receiving party to treat as confidential.\\n\\n2. CONFIDENTIAL INFORMATION\\n\\n\\\"Confidential Information\\\" means any information disclosed by either party to the other party, either directly or indirectly, in writing, orally or by inspection of tangible objects, which is designated as \\\"Confidential,\\\" \\\"Proprietary\\\" or some similar designation, or that should reasonably be understood to be confidential given the nature of the information and the circumstances of disclosure. Confidential Information shall not include any information which the receiving party can establish: (i) was publicly known prior to the time of disclosure; (ii) becomes publicly known after disclosure through no action or inaction of the receiving party; (iii) is already in the possession of the receiving party at the time of disclosure; (iv) is obtained by the receiving party from a third party without a breach of such third party's obligations of confidentiality; or (v) is independently developed by the receiving party without use of or reference to the disclosing party's Confidential Information.\\n\\n3. NON-DISCLOSURE\\n\\nThe receiving party shall not disclose any Confidential Information of the disclosing party to third parties for a period of twelve (12) months from the Effective Date. The receiving party shall take reasonable measures to protect the secrecy of and avoid disclosure and unauthorized use of the Confidential Information. The receiving party shall only disclose Confidential Information to its employees, directors, or third-party contractors with a need to know such information and who have signed confidentiality agreements at least as protective as the provisions of this Agreement.\\n\\n4. GOVERNING LAW\\n\\nThis Agreement shall be governed by and construed in accordance with the laws of the State of California, without regard to its conflict of law principles.\\n\\n5. TERM\\n\\nThis Agreement shall remain in effect for a period of twelve (12) months from the Effective Date, unless terminated earlier by mutual written agreement of the parties.\\n\\nIN WITNESS WHEREOF, the parties have executed this Non-Disclosure Agreement as of the Effective Date first written above.\\n\\nAcme Corp\\n\\nBy: _______________________\\nName: ____________________\\nTitle: _____________________\\n\\nJohn Doe\\n\\nBy: _______________________\",\n    \"created_at\": \"2025-04-11T21:45:30.123456\",\n    \"parameters\": {\n        \"party_1_name\": \"Acme Corp\",\n        \"party_1_address\": \"123 Main St, City, State\",\n        \"party_2_name\": \"John Doe\",\n        \"party_2_address\": \"456 Oak Ave, City, State\",\n        \"effective_date\": \"2025-04-11\",\n        \"term_months\": 12,\n        \"governing_law\": \"California\"\n    },\n    \"model\": \"gpt-4\"\n}\n```"
 					}
 				}
 			]
@@ -367,15 +381,16 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"query\": \"contract breach\",\n    \"filters\": {\n        \"year\": 2023,\n        \"jurisdiction\": \"federal\"\n    }\n}"
+							"raw": "{\n    \"query\": \"contract breach damages\",\n    \"filters\": {\n        \"year\": 2023,\n        \"jurisdiction\": \"federal\"\n    }\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8000/research/search",
+							"raw": "http://localhost:8000/api/research/search",
 							"protocol": "http",
 							"host": ["localhost"],
 							"port": "8000",
-							"path": ["research", "search"]
-						}
+							"path": ["api", "research", "search"]
+						},
+						"description": "Search legal cases with specific keywords and filters\n\nExample Response:\n```json\n{\n    \"query\": \"contract breach damages\",\n    \"filters\": {\n        \"year\": 2023,\n        \"jurisdiction\": \"federal\"\n    },\n    \"results\": [\n        {\n            \"id\": \"case123\",\n            \"title\": \"Acme Corp v. XYZ Inc\",\n            \"citation\": \"123 F.3d 456 (9th Cir. 2023)\",\n            \"jurisdiction\": \"federal\",\n            \"court\": \"United States Court of Appeals for the Ninth Circuit\",\n            \"date\": \"2023-03-15\",\n            \"summary\": \"The Ninth Circuit affirmed the district court's award of $2.3 million in damages for breach of a software development contract, finding that the plaintiff had adequately demonstrated both the breach and the resulting damages.\",\n            \"relevance_score\": 0.92,\n            \"highlights\": [\n                \"... awarded damages for breach of contract...\",\n                \"... defendant's failure to deliver the software as specified in the contract constitutes a material breach...\"\n            ]\n        },\n        {\n            \"id\": \"case456\",\n            \"title\": \"Johnson Industries v. Smith Manufacturing\",\n            \"citation\": \"234 F.Supp.3d 567 (S.D.N.Y. 2023)\",\n            \"jurisdiction\": \"federal\",\n            \"court\": \"United States District Court for the Southern District of New York\",\n            \"date\": \"2023-06-22\",\n            \"summary\": \"The court granted summary judgment to the plaintiff on its breach of contract claim but denied the motion with respect to consequential damages, finding that such damages were specifically excluded by the contract's limitation of liability clause.\",\n            \"relevance_score\": 0.87,\n            \"highlights\": [\n                \"... consequential damages for breach of contract were specifically excluded...\",\n                \"... the limitation of liability clause is enforceable under applicable state law...\"\n            ]\n        }\n    ],\n    \"total_results\": 24,\n    \"page\": 1,\n    \"page_size\": 2\n}\n```"
 					}
 				},
 				{
@@ -397,32 +412,66 @@
 							"raw": "{\n    \"case_details\": {\n        \"type\": \"contract_dispute\",\n        \"jurisdiction\": \"federal\",\n        \"parties\": [\"Acme Corp\", \"XYZ Inc\"],\n        \"claims\": [\"breach of contract\", \"fraud\"],\n        \"damages\": 100000,\n        \"evidence\": [\"written contract\", \"email communications\", \"payment records\"]\n    },\n    \"llm_model\": \"gpt-4\"\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8000/research/predict",
+							"raw": "http://localhost:8000/api/research/predict",
 							"protocol": "http",
 							"host": ["localhost"],
 							"port": "8000",
-							"path": ["research", "predict"]
-						}
+							"path": ["api", "research", "predict"]
+						},
+						"description": "Predict the outcome of a potential legal case\n\nExample Response:\n```json\n{\n    \"prediction\": {\n        \"likelihood_of_success\": 0.65,\n        \"estimated_damages\": 75000,\n        \"estimated_timeline\": \"12-18 months\",\n        \"analysis\": \"Based on the case details provided, there is a moderate to strong chance of succeeding on the breach of contract claim. The existence of a written contract and documentary evidence (emails and payment records) provides a solid foundation for establishing the terms of the agreement and the subsequent breach.\\n\\nHowever, the fraud claim may be more challenging to prove as it requires evidence of intentional misrepresentation and reliance, which is not clearly established in the evidence provided. Courts typically require a higher standard of proof for fraud claims.\\n\\nRegarding damages, while $100,000 is claimed, courts often award less than the full amount claimed. Based on similar cases in federal court, an award of approximately $75,000 would be reasonable if liability is established.\\n\\nThe estimated timeline reflects the typical duration for a federal contract dispute case, including discovery, motion practice, and trial if necessary.\"\n    },\n    \"similar_cases\": [\n        {\n            \"id\": \"case789\",\n            \"title\": \"Tech Solutions Inc. v. Enterprise Systems LLC\",\n            \"citation\": \"345 F.Supp.4th 678 (D. Mass. 2022)\",\n            \"outcome\": \"Plaintiff awarded $82,500 for breach of contract, fraud claim dismissed\",\n            \"similarity_score\": 0.82\n        },\n        {\n            \"id\": \"case012\",\n            \"title\": \"Digital Services Corp v. Business Applications Inc.\",\n            \"citation\": \"456 F.3d 789 (7th Cir. 2021)\",\n            \"outcome\": \"Summary judgment for defendant on all claims due to lack of evidence of damages\",\n            \"similarity_score\": 0.75\n        }\n    ],\n    \"model\": \"gpt-4\"\n}\n```"
 					}
 				}
 			]
+		},
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/health",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8000",
+					"path": ["health"]
+				},
+				"description": "Check if the API is up and running\n\nExample Response:\n```json\n{\n    \"status\": \"healthy\"\n}\n```"
+			}
+		},
+		{
+			"name": "Root",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8000",
+					"path": [""]
+				},
+				"description": "Root endpoint for the API Gateway\n\nExample Response:\n```json\n{\n    \"message\": \"Welcome to Legal AI API Gateway\"\n}\n```"
+			}
 		}
 	],
 	"variable": [
 		{
 			"key": "access_token",
 			"value": "",
-			"type": "string"
+			"type": "string",
+			"description": "JWT access token obtained from login endpoint"
 		},
 		{
 			"key": "document_id",
 			"value": "",
-			"type": "string"
+			"type": "string",
+			"description": "ID of a document in the system"
 		},
 		{
 			"key": "contract_id",
 			"value": "",
-			"type": "string"
+			"type": "string",
+			"description": "ID of a contract in the system"
 		}
 	]
 } 

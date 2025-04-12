@@ -14,11 +14,11 @@ A full-stack application using AI for legal document upload, analysis, research,
 
 ## Tech Stack
 
-### Backend (`backend/` - Main Service - Assumed)
+### Backend (`backend/` - Main Service)
 -   FastAPI (Python web framework)
--   MongoDB (Database - Assumed from original README)
+-   MongoDB (Database)
 -   JWT Authentication
--   OpenAI / Google AI integration (for features other than search)
+-   OpenAI / Google AI / PaliGemma integration 
 -   `uv` for package management
 
 ### Backend (`legal_search_service/` - Search Service)
@@ -39,16 +39,16 @@ A full-stack application using AI for legal document upload, analysis, research,
 
 ## Prerequisites
 
--   **Python:** 3.8+ (as per original README)
--   **Node.js:** 14+ (as per original README)
+-   **Python:** 3.8+ 
+-   **Node.js:** 14+ 
 -   **npm:** (comes with Node.js)
--   **Docker:** Required for running Qdrant locally.
+-   **Docker:** Required for running Qdrant locally (optional, see Troubleshooting section for alternatives).
 -   **uv:** Python package installer (see installation below).
 -   **Git:** For cloning the repository.
 -   **API Keys:**
-    -   **OpenAI API Key:** Required for the RAG search functionality in `legal_search_service`.
+    -   **OpenAI API Key:** Required for the RAG search functionality if using OpenAI.
     -   **DeepSeek API Key:** Required if `LLM_PROVIDER` is set to `deepseek`.
-    -   *Potentially* Google AI API Key / other keys if used by the main `backend` service.
+    -   **PaliGemma Model Access:** If using ColPali provider.
     -   *Optional* LlamaParse API Key for advanced document parsing features.
 -   **MongoDB:** Needs to be running if used by the main `backend` service.
 
@@ -62,7 +62,6 @@ cd <your-repository-directory>
 
 ### 2. Install uv (Python Package Manager)
 
-Follow the instructions from the original README:
 ```bash
 # Install uv
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -77,22 +76,17 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 This project uses two backend services. You need to set up both.
 
-**a) Main Backend Service (`backend/`)** (Based on original README structure)
+**a) Main Backend Service (`backend/`)**
 
 *   Navigate to the project root.
 *   Create/activate a virtual environment using `uv`:
     ```bash
-    uv venv venv_backend  # Create a separate venv for the main backend
-    source venv_backend/bin/activate # On Windows: venv_backend\Scripts\activate
+    uv venv venv  # Creates venv for main backend
+    source venv/bin/activate # On Windows: venv\Scripts\activate
     ```
 *   Install dependencies:
     ```bash
-    # Assuming requirements are in backend/requirements.txt as per original README
     uv pip sync backend/requirements.txt
-    ```
-*   Deactivate this environment for now (optional, just to avoid confusion):
-    ```bash
-    deactivate
     ```
 
 **b) Search Backend Service (`legal_search_service/`)**
@@ -100,17 +94,12 @@ This project uses two backend services. You need to set up both.
 *   Navigate to the project root.
 *   Create/activate a *separate* virtual environment using `uv`:
     ```bash
-    # Using uv for this service as well
     uv venv venv_search 
     source venv_search/bin/activate # On Windows: venv_search\Scripts\activate
     ```
 *   Install dependencies using `uv`:
     ```bash
     uv pip sync legal_search_service/requirements.txt
-    ```
-*   Deactivate this environment for now:
-    ```bash
-    deactivate
     ```
 
 ### 4. Frontend Setup (`frontend/`)
@@ -126,15 +115,15 @@ This project uses two backend services. You need to set up both.
 
 Set up environment variables for both backend services and the frontend.
 
-**a) Main Backend (`.env` in root or `backend/`)**
+**a) Main Backend (`.env` in `backend/`)**
 
-*   Copy the example file if it exists: `cp .env.example .env` (adjust path if needed).
-*   Edit the `.env` file with your specific configuration for the main backend (MongoDB connection, JWT secret, OpenAI/Google keys if used here, etc.).
+*   Copy the example file if it exists: `cp backend/.env.example backend/.env` (adjust path if needed).
+*   Edit the `.env` file with your specific configuration.
 
 **b) Search Backend (`legal_search_service/.env`)**
 
-*   Create a file named `.env` inside the `legal_search_service` directory (`legal_search_service/.env`).
-*   Add the following, **replacing placeholders**:
+*   Create or edit the file named `.env` inside the `legal_search_service` directory.
+*   Add the following configuration, replacing placeholders with your actual values:
 
     ```dotenv
     # --- Qdrant Configuration ---
@@ -146,7 +135,7 @@ Set up environment variables for both backend services and the frontend.
     EMBEDDING_MODEL_NAME=all-MiniLM-L6-v2
 
     # --- LlamaParse (Optional) ---
-    LLAMA_CLOUD_API_KEY=
+    LLAMA_CLOUD_API_KEY=your_llama_parse_key_here
 
     # --- OpenAI LLM --- (Required if LLM_PROVIDER=openai)
     OPENAI_API_KEY=your_openai_api_key_here 
@@ -154,8 +143,8 @@ Set up environment variables for both backend services and the frontend.
     
     # --- DeepSeek LLM --- (Required if LLM_PROVIDER=deepseek)
     DEEPSEEK_API_KEY=your_deepseek_api_key_here
-    DEEPSEEK_MODEL_NAME=deepseek-chat # Or deepseek-coder
-    DEEPSEEK_BASE_URL=https://api.deepseek.com/v1 # Verify this URL
+    DEEPSEEK_MODEL_NAME=deepseek-chat
+    DEEPSEEK_BASE_URL=https://api.deepseek.com/v1
 
     # --- LLM Selection ---
     LLM_PROVIDER=deepseek # Options: "openai", "deepseek"
@@ -166,12 +155,11 @@ Set up environment variables for both backend services and the frontend.
 
 **c) Frontend (`frontend/.env`)**
 
-*   Copy the example file if it exists: `cd frontend; cp .env.example .env; cd ..`.
 *   Edit `frontend/.env` and ensure these variables are present and correct:
 
     ```dotenv
     REACT_APP_SEARCH_API_URL=http://localhost:8001/api/v1 # URL for the Search Service
-    REACT_APP_API_URL=http://localhost:8000              # URL for the Main Backend (adjust if needed)
+    REACT_APP_API_URL=http://localhost:8000              # URL for the Main Backend
     ```
 
 ## Running the Application
@@ -180,42 +168,35 @@ Start the services in separate terminals from the **project root directory**.
 
 1.  **Start Qdrant (Vector Database via Docker):**
     *   *(Terminal 1)*
-    *   Qdrant is used as the vector database. The easiest way to run it locally is using Docker.
-    *   Run the official Qdrant image, mapping the necessary ports (6333 for HTTP, 6334 for gRPC) and mounting a volume for data persistence:
+    *   Ensure Docker is running on your system.
+    *   Run the official Qdrant image:
     ```bash
+    mkdir -p qdrant_data
     docker run -p 6333:6333 -p 6334:6334 \
            -v "$(pwd)/qdrant_data:/qdrant/storage:z" \
            qdrant/qdrant
     ```
-    *   **Note:** The `-v "$(pwd)/qdrant_data:/qdrant/storage:z"` part mounts a directory named `qdrant_data` from your current project root into the container. This ensures your indexed data persists even if you stop and restart the container. Create this `qdrant_data` directory if it doesn't exist. `$(pwd)` works on Linux/macOS/Git Bash; adjust the path before `/qdrant_data` if needed for other shells.
     *   Leave this terminal running. Qdrant will be accessible at `http://localhost:6333`.
 
-
-    Qdrant is now accessible:
-
-    REST API: localhost:6333
-    Web UI: localhost:6333/dashboard
-    GRPC API: localhost:6334
-
-
-
-2.  **Start Main Backend Service:** (If applicable)
+2.  **Start Main Backend Service:**
     *   *(Terminal 2)*
-    *   Activate the main backend virtual environment: `source venv_backend/bin/activate`
-    *   Run the server (adjust `app:app` if your entry point differs):
+    *   Activate the main backend virtual environment: `source venv/bin/activate`
+    *   Run the backend service:
         ```bash
-        uvicorn backend.app:app --reload --port 8000 # Assuming entry point is backend/app.py
+        cd backend
+        python app.py
         ```
-    *   Leave this running.
+    *   The service will be available at `http://localhost:8000`.
 
 3.  **Start Search Backend Service:**
     *   *(Terminal 3)*
     *   Activate the search service virtual environment: `source venv_search/bin/activate`
-    *   Run the server:
+    *   Run the server with the correct PYTHONPATH:
         ```bash
-        uvicorn legal_search_service.api.main:app --reload --port 8001
+        cd legal_search_service
+        PYTHONPATH=. python -m uvicorn api.main:app --host 0.0.0.0 --port 8001
         ```
-    *   Leave this running.
+    *   The service will be available at `http://localhost:8001`.
 
 4.  **Start Frontend:**
     *   *(Terminal 4)*
@@ -224,7 +205,7 @@ Start the services in separate terminals from the **project root directory**.
         ```bash
         npm start
         ```
-    *   This should open `http://localhost:3000` (or similar) in your browser.
+    *   This should open `http://localhost:3001` in your browser (note: port may vary if 3001 is already in use).
 
 ## Using the Application
 
@@ -240,9 +221,35 @@ Start the services in separate terminals from the **project root directory**.
     *   Type your question related to the uploaded documents and click "Ask".
     *   The app retrieves relevant context and uses the configured LLM to generate an answer with citations.
 
-## Development
+## Troubleshooting
 
-*(Keep relevant sections from original README regarding uv usage for main backend, testing, code style, etc.)*
+### Docker/Qdrant Issues
+
+If you encounter issues with Docker or running Qdrant:
+
+1. Make sure Docker Desktop is installed and running on your system.
+2. If Docker cannot be used, you can try:
+   - Using a cloud-hosted Qdrant instance (update the QDRANT_URL in .env)
+   - Using a different vector database like Milvus or Chroma (requires code modifications)
+   - Running Qdrant without Docker (see Qdrant documentation for standalone installation)
+
+### Search Service Import Issues
+
+If you encounter the error `ModuleNotFoundError: No module named 'legal_search_service'`:
+
+1. Always run the search service with the PYTHONPATH set correctly:
+   ```bash
+   cd legal_search_service
+   PYTHONPATH=. python -m uvicorn api.main:app --host 0.0.0.0 --port 8001
+   ```
+
+2. Alternatively, you can modify the import statements in the code to use relative imports.
+
+### Frontend Port Issues
+
+If port 3000 is already in use, the application will ask to use a different port (usually 3001). Update your frontend configuration or browser bookmarks accordingly.
+
+## Development
 
 ### Package Management with uv (Main Backend)
 ```bash

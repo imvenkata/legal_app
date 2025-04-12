@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response, Cookie
+from fastapi import APIRouter, Depends, HTTPException, status, Response, Cookie, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from motor.motor_asyncio import AsyncIOMotorClient
+from bson import ObjectId
 
 router = APIRouter()
 
@@ -16,7 +17,7 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login") # We will manually handle token retrieval
 
 # Models
 class UserLogin(BaseModel):
@@ -60,12 +61,24 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_current_user(request: Request):
+    token = request.cookies.get("access_token")
+
+    if not token:
+        # Fallback to checking Authorization header if needed
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split("Bearer ")[1]
+
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    
+    if not token:
+        raise credentials_exception
+
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id: str = payload.get("sub")
@@ -74,7 +87,13 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     except JWTError:
         raise credentials_exception
     
-    user = await users_collection.find_one({"_id": user_id})
+    # Convert ObjectId string back to ObjectId for querying MongoDB
+    try:
+        user_id_obj = ObjectId(user_id)
+    except Exception:
+         raise credentials_exception
+
+    user = await users_collection.find_one({"_id": user_id_obj})
     if user is None:
         raise credentials_exception
     return user
@@ -103,7 +122,7 @@ async def login(
         key="access_token",
         value=access_token,
         httponly=True,
-        secure=True,  # Enable in production
+        secure=False,  # Set to True in production over HTTPS
         samesite="lax",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60
     )
@@ -139,8 +158,12 @@ async def register(user_data: UserRegister):
 
 @router.get("/me", response_model=UserResponse)
 async def get_current_user_info(current_user: dict = Depends(get_current_user)):
+    # Ensure _id is converted to string for the response model
+    # If user['_id'] is already a string, this is fine. If it's ObjectId, convert it.
+    user_id_str = str(current_user["_id"])
+    
     return {
-        "id": str(current_user["_id"]),
+        "id": user_id_str,
         "name": current_user["name"],
         "email": current_user["email"]
     }

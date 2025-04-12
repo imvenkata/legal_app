@@ -6,6 +6,7 @@ from .openai_adapter import OpenAIAdapter
 from .gemini_adapter import GeminiAdapter
 from .deepseek_adapter import DeepSeekAdapter
 from .base_adapter import BaseLLMAdapter
+from .adapters.colpali_adapter import ColPaliAdapter
 
 # Load environment variables
 load_dotenv()
@@ -24,15 +25,45 @@ class LLMAdapterFactory:
             },
             "deepseek": {
                 "deepseek-chat": DeepSeekAdapter,
+            },
+            "colpali": {
+                "google/colpali-3b": ColPaliAdapter,
             }
         }
     
-    def get_adapter(self, provider: str, model: str) -> BaseLLMAdapter:
+    def get_adapter_class(self, provider: str, model: str) -> type[BaseLLMAdapter]:
+        """
+        Get the appropriate LLM adapter class based on provider and model.
+        Allows caller to handle initialization with specific parameters.
+        
+        Args:
+            provider: The LLM provider (openai, gemini, deepseek, colpali)
+            model: The specific model to use
+            
+        Returns:
+            The adapter class
+            
+        Raises:
+            ValueError: If the provider or model is not supported
+        """
+        provider_lower = provider.lower()
+        if provider_lower not in self.adapters:
+            raise ValueError(f"Provider '{provider_lower}' not supported. Available providers: {list(self.adapters.keys())}")
+        
+        provider_models = self.adapters[provider_lower]
+        
+        if model not in provider_models:
+            raise ValueError(f"Model '{model}' not supported for provider '{provider_lower}'. Available models: {list(provider_models.keys())}")
+        
+        adapter_class = provider_models[model]
+        return adapter_class
+    
+    def get_adapter(self, provider: str, model: str, **kwargs) -> BaseLLMAdapter:
         """
         Get the appropriate LLM adapter based on provider and model
         
         Args:
-            provider: The LLM provider (openai, gemini, deepseek)
+            provider: The LLM provider (openai, gemini, deepseek, colpali)
             model: The specific model to use
             
         Returns:

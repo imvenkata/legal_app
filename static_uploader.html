@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document Uploader</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input[type="text"],
+    textarea,
+    input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    textarea {
+      min-height: 100px;
+    }
+    button {
+      background: #1976d2;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100%;
+    }
+    button:hover {
+      background: #1565c0;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .alert {
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+    }
+    .alert-error {
+      background: #ffebee;
+      color: #c62828;
+    }
+    .alert-success {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    .help-text {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Document Uploader</h1>
+  <div id="message-container"></div>
+  
+  <form id="upload-form">
+    <div class="form-group">
+      <label for="title">Document Title *</label>
+      <input type="text" id="title" name="title" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="description">Description (Optional)</label>
+      <textarea id="description" name="description"></textarea>
+    </div>
+    
+    <div class="form-group">
+      <label for="file">Document File *</label>
+      <input type="file" id="file" name="file" accept=".pdf,.doc,.docx,.txt" required>
+      <div class="help-text">Supported formats: PDF, DOC, DOCX, TXT (max 10MB)</div>
+    </div>
+    
+    <button type="submit" id="submit-btn">Upload Document</button>
+  </form>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('upload-form');
+      const submitBtn = document.getElementById('submit-btn');
+      const messageContainer = document.getElementById('message-container');
+      
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Get form values
+        const title = document.getElementById('title').value;
+        const description = document.getElementById('description').value;
+        const fileInput = document.getElementById('file');
+        const file = fileInput.files[0];
+        
+        // Validate
+        if (!title || !file) {
+          showMessage('Please provide a title and select a file', 'error');
+          return;
+        }
+        
+        // Disable form during upload
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Uploading...';
+        
+        try {
+          // Create form data
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('title', title);
+          formData.append('description', description);
+          
+          // Send request
+          const response = await fetch('http://localhost:8000/api/documents/upload', {
+            method: 'POST',
+            body: formData
+          });
+          
+          // Handle response
+          if (response.ok) {
+            const data = await response.json();
+            console.log('Upload successful:', data);
+            showMessage('Document uploaded successfully!', 'success');
+            form.reset();
+          } else {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || 'Upload failed');
+          }
+        } catch (err) {
+          console.error('Upload error:', err);
+          showMessage(err.message || 'Failed to upload document', 'error');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Upload Document';
+        }
+      });
+      
+      // Helper function to show messages
+      function showMessage(message, type) {
+        messageContainer.innerHTML = '';
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type}`;
+        alertDiv.textContent = message;
+        messageContainer.appendChild(alertDiv);
+      }
+    });
+  </script>
+</body>
+</html> 

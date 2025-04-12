@@ -1,7 +1,7 @@
 import os
 from typing import Dict, Any, Optional
 from .base_adapter import LlmAdapter
-import openai
+from openai import AsyncOpenAI
 
 class OpenAiAdapter(LlmAdapter):
     """
@@ -10,24 +10,30 @@ class OpenAiAdapter(LlmAdapter):
     
     async def initialize(self, api_key: str, model_params: Dict[str, Any]) -> None:
         """Initialize the OpenAI adapter with API key and model parameters"""
-        self.api_key = api_key
-        openai.api_key = api_key
+        self.client = AsyncOpenAI(api_key=api_key)
         self.model = model_params.get("model", "gpt-4")
         self.max_tokens = model_params.get("max_tokens", 1000)
         self.temperature = model_params.get("temperature", 0.7)
         
-    async def generate_text(self, prompt: str, max_tokens: int = 1000, temperature: float = 0.7) -> str:
+    async def generate_text(self, prompt: str, max_tokens: Optional[int] = None, temperature: Optional[float] = None) -> str:
         """Generate text using OpenAI GPT models"""
         try:
-            response = await openai.ChatCompletion.acreate(
+            current_max_tokens = max_tokens if max_tokens is not None else self.max_tokens
+            current_temperature = temperature if temperature is not None else self.temperature
+            
+            response = await self.client.chat.completions.create(
                 model=self.model,
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=max_tokens,
-                temperature=temperature
+                max_tokens=current_max_tokens,
+                temperature=current_temperature
             )
-            return response.choices[0].message.content
+            if response.choices and response.choices[0].message:
+                return response.choices[0].message.content or ""
+            else:
+                print("OpenAI response did not contain expected content.")
+                return ""
         except Exception as e:
-            print(f"Error generating text with OpenAI: {e}")
+            print(f"Error generating text with OpenAI ({self.model}): {e}")
             return ""
     
     async def analyze_document(self, document_text: str) -> Dict[str, Any]:
@@ -45,11 +51,11 @@ class OpenAiAdapter(LlmAdapter):
         """
         
         try:
-            response = await self.generate_text(prompt, max_tokens=2000)
-            
-            # Process the response into structured data
-            # This is a simplified version - in production, you'd want more robust parsing
-            lines = response.split('\n')
+            response_text = await self.generate_text(prompt, max_tokens=2000)
+            if not response_text:
+                 raise ValueError("Received empty response from generate_text")
+                 
+            lines = response_text.split('\n')
             result = {
                 "summary": "",
                 "entities": [],
@@ -61,30 +67,36 @@ class OpenAiAdapter(LlmAdapter):
             current_section = None
             for line in lines:
                 line = line.strip()
-                if "summary" in line.lower():
+                if not line: continue
+                
+                lower_line = line.lower()
+                if "summary" in lower_line and ":" in lower_line:
                     current_section = "summary"
-                elif "entities" in line.lower() or "key entities" in line.lower():
+                    result["summary"] = line.split(":", 1)[1].strip()
+                elif ("entities" in lower_line or "key entities" in lower_line) and ":" in lower_line:
                     current_section = "entities"
-                elif "clauses" in line.lower() or "provisions" in line.lower():
+                elif ("clauses" in lower_line or "provisions" in lower_line) and ":" in lower_line:
                     current_section = "clauses"
-                elif "risks" in line.lower() or "issues" in line.lower():
+                elif ("risks" in lower_line or "issues" in lower_line) and ":" in lower_line:
                     current_section = "risks"
-                elif "recommendations" in line.lower():
+                elif "recommendations" in lower_line and ":" in lower_line:
                     current_section = "recommendations"
-                elif line and current_section:
-                    if current_section == "summary":
-                        result["summary"] += line + " "
-                    elif current_section in ["entities", "clauses", "risks", "recommendations"]:
-                        if line.startswith("- "):
-                            result[current_section].append(line[2:])
+                elif current_section:
+                    if current_section in ["entities", "clauses", "risks", "recommendations"]:
+                        if line.startswith(('-', '*', '1.', '2.', '3.', '4.', '5.')):
+                            result[current_section].append(line.split(" ", 1)[1].strip() if " " in line else line)
                         else:
-                            result[current_section].append(line)
+                             result[current_section].append(line)
+                    elif current_section == "summary":
+                        result["summary"] += " " + line
+
+            result["summary"] = result["summary"].strip()
             
             return result
         except Exception as e:
             print(f"Error analyzing document with OpenAI: {e}")
             return {
-                "summary": "Error analyzing document",
+                "summary": f"Error analyzing document: {e}",
                 "entities": [],
                 "clauses": [],
                 "risks": [],
@@ -107,10 +119,11 @@ class OpenAiAdapter(LlmAdapter):
             prompt += f"\nAdditional context: {context}"
         
         try:
-            response = await self.generate_text(prompt, max_tokens=2000)
+            response_text = await self.generate_text(prompt, max_tokens=2000)
+            if not response_text:
+                 raise ValueError("Received empty response from generate_text")
             
-            # Process the response into structured data
-            lines = response.split('\n')
+            lines = response_text.split('\n')
             result = {
                 "principles": [],
                 "precedents": [],
@@ -121,22 +134,32 @@ class OpenAiAdapter(LlmAdapter):
             current_section = None
             for line in lines:
                 line = line.strip()
-                if "principles" in line.lower() or "legal principles" in line.lower():
+                if not line: continue
+
+                lower_line = line.lower()
+                if ("principles" in lower_line or "legal principles" in lower_line) and ":" in lower_line:
                     current_section = "principles"
-                elif "precedents" in line.lower() or "cases" in line.lower():
+                elif ("precedents" in lower_line or "cases" in lower_line) and ":" in lower_line:
                     current_section = "precedents"
-                elif "analysis" in line.lower() or "interpretation" in line.lower():
+                elif ("analysis" in lower_line or "interpretation" in lower_line) and ":" in lower_line:
                     current_section = "analysis"
-                elif "conclusion" in line.lower() or "recommendation" in line.lower():
+                    result["analysis"] = line.split(":", 1)[1].strip()
+                elif ("conclusion" in lower_line or "recommendation" in lower_line) and ":" in lower_line:
                     current_section = "conclusion"
-                elif line and current_section:
+                    result["conclusion"] = line.split(":", 1)[1].strip()
+                elif current_section:
                     if current_section in ["principles", "precedents"]:
-                        if line.startswith("- "):
-                            result[current_section].append(line[2:])
+                        if line.startswith(('-', '*', '1.', '2.', '3.', '4.', '5.')):
+                            result[current_section].append(line.split(" ", 1)[1].strip() if " " in line else line)
                         else:
-                            result[current_section].append(line)
-                    elif current_section in ["analysis", "conclusion"]:
-                        result[current_section] += line + " "
+                             result[current_section].append(line)
+                    elif current_section == "analysis":
+                        result["analysis"] += " " + line
+                    elif current_section == "conclusion":
+                        result["conclusion"] += " " + line
+
+            result["analysis"] = result["analysis"].strip()
+            result["conclusion"] = result["conclusion"].strip()
             
             return result
         except Exception as e:
@@ -144,8 +167,8 @@ class OpenAiAdapter(LlmAdapter):
             return {
                 "principles": [],
                 "precedents": [],
-                "analysis": "Error processing research query",
-                "conclusion": "Error processing research query"
+                "analysis": f"Error processing research query: {e}",
+                "conclusion": f"Error processing research query: {e}"
             }
     
     async def generate_contract(self, template: str, parameters: Dict[str, Any]) -> str:
@@ -168,16 +191,20 @@ class OpenAiAdapter(LlmAdapter):
             print(f"Error generating contract with OpenAI: {e}")
             return template
     
-    async def get_embedding(self, text: str) -> list:
+    async def get_embedding(self, text: str, model: str = "text-embedding-3-small") -> list:
         """Get vector embedding for the provided text using OpenAI embeddings"""
         try:
-            response = await openai.Embedding.acreate(
-                model="text-embedding-ada-002",
+            response = await self.client.embeddings.create(
+                model=model,
                 input=text
             )
-            return response.data[0].embedding
+            if response.data and response.data[0].embedding:
+                return response.data[0].embedding
+            else:
+                print("OpenAI embedding response did not contain expected data.")
+                return []
         except Exception as e:
-            print(f"Error getting embedding with OpenAI: {e}")
+            print(f"Error getting embedding with OpenAI ({model}): {e}")
             return []
     
     def get_token_count(self, text: str) -> int:

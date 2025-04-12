@@ -21,7 +21,8 @@ slowapi==0.1.8
 limits==3.3.0
 deprecated==1.2.14
 wrapt==1.15.0
-passlib[bcrypt]==1.7.4
+passlib
+bcrypt
 importlib-resources==6.1.1
 packaging==23.2
 aiofiles==23.2.1
@@ -30,6 +31,7 @@ pillow==10.1.0
 transformers==4.50.0
 requests==2.31.0
 urllib3==2.0.7
-torch==2.0.1
+torch>=2.2.0
 sympy==1.12
 accelerate==0.23.0
+python-docx==1.1.2
