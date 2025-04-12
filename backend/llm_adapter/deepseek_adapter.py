@@ -2,7 +2,7 @@ import os
 from typing import Dict, Any, Optional
 from dotenv import load_dotenv
 
-from .base_adapter import BaseLLMAdapter
+from backend.llm_adapter.base_adapter import BaseLLMAdapter
 
 # Load environment variables
 load_dotenv()
@@ -164,9 +164,9 @@ class DeepSeekAdapter(BaseLLMAdapter):
         
         3.1 Fees. Client shall pay Consultant {parameters.get('compensation_amount', '$10,000 per month')} for the Services.
         
-        3.2 Payment Terms. {parameters.get('payment_terms', 'Payment shall be made within thirty (30) days of receipt of Consultant\'s invoice.')}
+        3.2 Payment Terms. {parameters.get('payment_terms', 'Payment shall be made within thirty (30) days of receipt of Consultant''s invoice.')}
         
-        3.3 Expenses. {parameters.get('expense_terms', 'Client shall reimburse Consultant for all reasonable and necessary expenses incurred in connection with the Services, provided that Consultant obtains Client\'s prior written approval for any expense exceeding $500.')}
+        3.3 Expenses. {parameters.get('expense_terms', 'Client shall reimburse Consultant for all reasonable and necessary expenses incurred in connection with the Services, provided that Consultant obtains Client''s prior written approval for any expense exceeding $500.')}
         
         4. CONFIDENTIALITY
         
