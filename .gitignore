@@ -57,6 +57,7 @@ yarn-error.log*
 .env.production
 **/.env
 **/.env.*
+!**/.env.example
 
 # IDE and editors
 .idea/
