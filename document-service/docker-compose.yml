@@ -15,7 +15,6 @@ services:
       - MONGO_DB_NAME=document_service
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
       - LLM_PROVIDER=openai
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
     volumes:
       - ./:/app
     depends_on:
@@ -50,7 +49,7 @@ services:
   document-mongodb:
     image: mongo:latest
     ports:
-      - "27017:27017"
+      - "27018:27017"
     volumes:
       - document-mongodb-data:/data/db
 
