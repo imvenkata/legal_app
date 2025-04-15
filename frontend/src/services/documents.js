@@ -127,6 +127,15 @@ export const documentAPI = {
   },
 
   /**
+   * Get analysis result for a document
+   * @param {string} id - Document ID
+   * @returns {Promise<object>} - Analysis result
+   */
+  getDocumentAnalysis: async (id) => {
+    return documentClient.get(`/api/documents/${id}/analysis`);
+  },
+
+  /**
    * Delete a document
    * @param {string} id - Document ID
    * @returns {Promise<void>}

@@ -1,0 +1,429 @@
+#!/usr/bin/env python3
+import json
+import os
+
+# Define the Postman collection
+collection = {
+    "info": {
+        "name": "Document Service API",
+        "description": "API collection for Legal Document Service",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "document_id",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "base_url",
+            "value": "http://localhost:8002",
+            "type": "string"
+        },
+        {
+            "key": "test_document_path",
+            "value": "/Users/venkata/startup/legal_app/document-service/documents/state_smith_v2.pdf",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Health Checks",
+            "item": [
+                {
+                    "name": "Health Check",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/health",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "8002",
+                            "path": ["health"]
+                        },
+                        "description": "Check the health status of the document service."
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Response has status field\", function () {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData).to.have.property('status');",
+                                    "    pm.expect(jsonData.status).to.equal('ok');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Environment Debug",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/debug/env",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "8002",
+                            "path": ["debug", "env"]
+                        },
+                        "description": "Check the environment variables of the document service."
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Response has environment variables\", function () {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData).to.be.an('object');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Documents",
+            "item": [
+                {
+                    "name": "Create Document",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{base_url}}/api/documents",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "8002",
+                            "path": ["api", "documents"]
+                        },
+                        "description": "Upload a new document to the system",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "multipart/form-data"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": "{{test_document_path}}",
+                                    "description": "The document file to upload (PDF, DOCX, etc.)"
+                                },
+                                {
+                                    "key": "title",
+                                    "value": "State Smith v2 Document",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "description",
+                                    "value": "Test document for legal analysis",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "tags",
+                                    "value": "test,legal,document",
+                                    "type": "text",
+                                    "description": "Comma-separated tags"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Response has document ID\", function () {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData).to.have.property('id');",
+                                    "    ",
+                                    "    // Store the document ID for subsequent requests",
+                                    "    pm.collectionVariables.set(\"document_id\", jsonData.id);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Documents",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/documents?skip=0&limit=100&user_id=user123",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "8002",
+                            "path": ["api", "documents"],
+                            "query": [
+                                {
+                                    "key": "skip",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "100"
+                                },
+                                {
+                                    "key": "user_id",
+                                    "value": "user123"
+                                }
+                            ]
+                        },
+                        "description": "Retrieve all documents"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Response has documents array\", function () {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData).to.have.property('items');",
+                                    "    pm.expect(jsonData.items).to.be.an('array');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Document",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/documents/{{document_id}}",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "8002",
+                            "path": ["api", "documents", "{{document_id}}"]
+                        },
+                        "description": "Retrieve a specific document by ID"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Response has document details\", function () {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData).to.have.property('id');",
+                                    "    pm.expect(jsonData).to.have.property('title');",
+                                    "    pm.expect(jsonData).to.have.property('status');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Update Document",
+                    "request": {
+                        "method": "PUT",
+                        "url": {
+                            "raw": "{{base_url}}/api/documents/{{document_id}}",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "8002",
+                            "path": ["api", "documents", "{{document_id}}"]
+                        },
+                        "description": "Update document metadata",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"title\": \"Updated State Smith Document\",\n  \"description\": \"Updated test document description\",\n  \"tags\": [\"updated\", \"test\", \"legal\"]\n}"
+                        }
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Response has updated document\", function () {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData).to.have.property('id');",
+                                    "    pm.expect(jsonData.title).to.equal('Updated State Smith Document');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Delete Document",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{base_url}}/api/documents/{{document_id}}",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "8002",
+                            "path": ["api", "documents", "{{document_id}}"]
+                        },
+                        "description": "Delete a document"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Response indicates success\", function () {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData).to.have.property('message');",
+                                    "    pm.expect(jsonData.message).to.include('successfully deleted');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Analyze Document",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{base_url}}/api/documents/{{document_id}}/analyze",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "8002",
+                            "path": ["api", "documents", "{{document_id}}", "analyze"]
+                        },
+                        "description": "Analyze the content of a document",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"prompt\": \"Summarize the key points of this legal document and identify any potential issues or concerns.\"\n}"
+                        }
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Response has analysis ID\", function () {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData).to.have.property('analysis_id');",
+                                    "    ",
+                                    "    // Store the analysis ID for subsequent requests",
+                                    "    pm.collectionVariables.set(\"analysis_id\", jsonData.analysis_id);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Document Analysis",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/documents/{{document_id}}/analysis",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "8002",
+                            "path": ["api", "documents", "{{document_id}}", "analysis"]
+                        },
+                        "description": "Get the analysis results for a document"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Response has analysis results\", function () {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData).to.have.property('analysis');",
+                                    "    pm.expect(jsonData.analysis).to.be.an('object');",
+                                    "    pm.expect(jsonData.analysis).to.have.property('summary');",
+                                    "    pm.expect(jsonData.analysis).to.have.property('key_points');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+# Create the output directory if it doesn't exist
+os.makedirs('output', exist_ok=True)
+
+# Write the collection to a JSON file
+with open('output/document_service_collection.json', 'w') as f:
+    json.dump(collection, f, indent=2)
+
+print('Postman collection generated successfully at: output/document_service_collection.json') 

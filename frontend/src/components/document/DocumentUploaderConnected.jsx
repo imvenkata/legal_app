@@ -8,7 +8,8 @@ import {
   TextField, 
   CircularProgress, 
   Alert,
-  Chip
+  Chip,
+  Tooltip
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -163,14 +164,33 @@ const DocumentUploaderConnected = () => {
       
       // Find the document to update its status
       const document = documents.find(doc => doc.id === id);
-      if (document) {
-        // Update document status to analyzing
-        dispatch(setDocuments(
-          documents.map(doc => 
-            doc.id === id ? { ...doc, status: 'analyzing' } : doc
-          )
-        ));
+      if (!document) {
+        throw new Error('Document not found');
       }
+      
+      // Check if document is ready for analysis
+      if (document.status !== 'parsing_completed' && document.status !== 'uploaded' && 
+          document.status !== 'analysis_failed' && document.status !== 'error') {
+        if (document.status === 'parsing_failed') {
+          throw new Error('Document parsing failed. Please upload the document again.');
+        } else if (document.status === 'analyzing' || document.status === 'parsing') {
+          throw new Error('Document is currently being processed. Please wait.');
+        } else if (document.status === 'analyzed') {
+          // If already analyzed, just get the analysis instead of redoing it
+          dispatch(setLoading(false));
+          handleViewAnalysis(document);
+          return;
+        } else {
+          throw new Error(`Document cannot be analyzed in its current state: ${document.status}`);
+        }
+      }
+      
+      // Update document status to analyzing
+      dispatch(setDocuments(
+        documents.map(doc => 
+          doc.id === id ? { ...doc, status: 'analyzing' } : doc
+        )
+      ));
       
       const response = await documentAPI.analyzeDocument(id, preferredLlmModel);
       
@@ -192,13 +212,83 @@ const DocumentUploaderConnected = () => {
       dispatch(setError(err.message || 'Failed to analyze document'));
       dispatch(setLoading(false));
       
-      // Revert document status
-      dispatch(setDocuments(
-        documents.map(doc => 
-          doc.id === id ? { ...doc, status: 'uploaded' } : doc
-        )
-      ));
+      // Find current document state to properly revert status
+      const currentDoc = documents.find(doc => doc.id === id);
+      if (currentDoc && currentDoc.status === 'analyzing') {
+        // Only revert if we changed it to analyzing
+        const originalStatus = currentDoc.status === 'analyzing' ? 
+          (currentDoc.status === 'parsing_completed' ? 'parsing_completed' : 'uploaded') : 
+          currentDoc.status;
+        
+        dispatch(setDocuments(
+          documents.map(doc => 
+            doc.id === id ? { ...doc, status: originalStatus } : doc
+          )
+        ));
+      }
     }
+  };
+
+  const handleViewAnalysis = (document) => {
+    // Set the current document and navigate to the analysis view
+    dispatch(setCurrentDocument(document));
+    // If you have analysis data for this document, you can retrieve it here
+    // or fetch it from the server
+    documentAPI.getDocumentAnalysis(document.id)
+      .then(response => {
+        dispatch(setAnalysisResult(response.data));
+      })
+      .catch(err => {
+        dispatch(setError(err.message || 'Failed to fetch analysis'));
+      });
+  };
+
+  const formatStatus = (status) => {
+    const statusMap = {
+      'uploaded': 'Uploaded',
+      'parsing': 'Processing',
+      'parsing_failed': 'Processing Failed',
+      'parsing_completed': 'Ready for Analysis',
+      'analyzing': 'Analyzing',
+      'analysis_failed': 'Analysis Failed',
+      'analyzed': 'Analyzed',
+      'deleting': 'Deleting',
+      'deleted': 'Deleted',
+      'error': 'Error'
+    };
+    return statusMap[status] || status;
+  };
+
+  const getStatusColor = (status) => {
+    const statusColorMap = {
+      'uploaded': 'default',
+      'parsing': 'info',
+      'parsing_failed': 'error',
+      'parsing_completed': 'info',
+      'analyzing': 'info',
+      'analysis_failed': 'error',
+      'analyzed': 'success',
+      'deleting': 'warning',
+      'deleted': 'default',
+      'error': 'error'
+    };
+    return statusColorMap[status] || 'default';
+  };
+
+  const getStatusDescription = (status) => {
+    const statusDescriptionMap = {
+      'uploaded': 'Document has been uploaded but not yet processed',
+      'parsing': 'Document is being processed for text extraction',
+      'parsing_failed': 'Failed to extract text from the document',
+      'parsing_completed': 'Document text has been extracted and is ready for analysis',
+      'analyzing': 'Document is being analyzed by AI',
+      'analysis_failed': 'Failed to analyze the document',
+      'analyzed': 'Document has been successfully analyzed',
+      'deleting': 'Document is being deleted',
+      'deleted': 'Document has been deleted',
+      'error': 'An error occurred with this document'
+    };
+    return statusDescriptionMap[status] || 'Unknown status';
   };
 
   return (
@@ -300,7 +390,15 @@ const DocumentUploaderConnected = () => {
               <Box>
                 <Typography variant="subtitle1">{doc.title}</Typography>
                 <Typography variant="body2" color="textSecondary">
-                  {doc.file_type} • {doc.status}
+                  {doc.file_type} • 
+                  <Tooltip title={getStatusDescription(doc.status)}>
+                    <Chip 
+                      label={formatStatus(doc.status)} 
+                      size="small" 
+                      color={getStatusColor(doc.status)}
+                      sx={{ ml: 1 }}
+                    />
+                  </Tooltip>
                 </Typography>
               </Box>
             </Box>
@@ -316,7 +414,7 @@ const DocumentUploaderConnected = () => {
                   Analyze
                 </Button>
               )}
-              {doc.status === 'analyzing' && (
+              {(doc.status === 'parsing' || doc.status === 'analyzing') && (
                 <Button
                   variant="outlined"
                   color="primary"
@@ -324,7 +422,17 @@ const DocumentUploaderConnected = () => {
                   sx={{ mr: 1 }}
                 >
                   <CircularProgress size={20} sx={{ mr: 1 }} />
-                  Analyzing...
+                  {doc.status === 'parsing' ? 'Processing...' : 'Analyzing...'}
+                </Button>
+              )}
+              {(doc.status === 'parsing_failed' || doc.status === 'analysis_failed' || doc.status === 'error') && (
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() => handleAnalyze(doc.id)}
+                  sx={{ mr: 1 }}
+                >
+                  Retry
                 </Button>
               )}
               {doc.status === 'analyzed' && (
@@ -332,6 +440,7 @@ const DocumentUploaderConnected = () => {
                   variant="outlined"
                   color="success"
                   sx={{ mr: 1 }}
+                  onClick={() => handleViewAnalysis(doc)}
                 >
                   View Analysis
                 </Button>

@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  auth-service:
+    build: .
+    ports:
+      - "8001:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@auth-db:5432/auth_db
+      - JWT_SECRET_KEY=your_jwt_secret_key_change_in_production
+      - JWT_ALGORITHM=HS256
+      - JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30
+    volumes:
+      - ./:/app
+    depends_on:
+      - auth-db
+    command: uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
+
+  auth-db:
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=auth_db
+    volumes:
+      - auth-db-data:/var/lib/postgresql/data
+
+volumes:
+  auth-db-data: 

@@ -1,0 +1,507 @@
+{
+  "info": {
+    "name": "Document Service API",
+    "description": "API collection for Legal Document Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Checks",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8002/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["health"]
+            },
+            "description": "Check the health status of the document service."
+          },
+          "response": [
+            {
+              "name": "Health Check Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "http://localhost:8002/health",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "8002",
+                  "path": ["health"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"status\": \"healthy\",\n    \"version\": \"0.1.0\",\n    \"storage_type\": \"local\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Environment Debug",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8002/debug/env",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["debug", "env"]
+            },
+            "description": "Check the environment variables of the document service."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "Upload Document",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "http://localhost:8002/api/documents/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["api", "documents", ""]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/Users/venkata/startup/legal_app/document-service/documents/state_smith_v2.pdf",
+                  "description": "The document file to upload"
+                },
+                {
+                  "key": "title",
+                  "value": "State v. Smith Legal Case",
+                  "type": "text",
+                  "description": "Document title"
+                },
+                {
+                  "key": "description",
+                  "value": "Sample legal document for testing",
+                  "type": "text",
+                  "description": "Document description"
+                },
+                {
+                  "key": "tags",
+                  "value": "[\"legal\", \"case\", \"sample\"]",
+                  "type": "text",
+                  "description": "Document tags as JSON array"
+                }
+              ]
+            },
+            "description": "Upload a new document to the service."
+          },
+          "response": [
+            {
+              "name": "Upload Document Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "http://localhost:8002/api/documents/",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "8002",
+                  "path": ["api", "documents", ""]
+                },
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": "/Users/venkata/startup/legal_app/document-service/documents/state_smith_v2.pdf"
+                    },
+                    {
+                      "key": "title",
+                      "value": "State v. Smith Legal Case",
+                      "type": "text"
+                    },
+                    {
+                      "key": "description",
+                      "value": "Sample legal document for testing",
+                      "type": "text"
+                    },
+                    {
+                      "key": "tags",
+                      "value": "[\"legal\", \"case\", \"sample\"]",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "body": "{\n    \"title\": \"State v. Smith Legal Case\",\n    \"description\": \"Sample legal document for testing\",\n    \"filename\": \"state_smith_v2.pdf\",\n    \"file_size\": 105756,\n    \"file_type\": \"application/pdf\",\n    \"storage_path\": \"documents/123/b963897a-1e13-48b1-b847-f5656534857a/state_smith_v2.pdf\",\n    \"owner_id\": 123,\n    \"tags\": [\"legal\", \"case\", \"sample\"],\n    \"id\": \"9268378f-48c3-488f-91f9-0c1f97134546\",\n    \"created_at\": \"2025-04-15T07:56:16.392443+00:00\",\n    \"updated_at\": null,\n    \"status\": \"uploaded\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Documents",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8002/api/documents/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["api", "documents", ""],
+              "query": [
+                {
+                  "key": "skip",
+                  "value": "0",
+                  "description": "Number of records to skip",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "100",
+                  "description": "Maximum number of records to return",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "Smith",
+                  "description": "Search term for documents",
+                  "disabled": true
+                },
+                {
+                  "key": "tag",
+                  "value": "legal",
+                  "description": "Filter documents by tag",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve all documents for the current user."
+          }
+        },
+        {
+          "name": "Get Document",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8002/api/documents/{{document_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["api", "documents", "{{document_id}}"]
+            },
+            "description": "Retrieve a specific document by ID."
+          },
+          "response": [
+            {
+              "name": "Get Document Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "http://localhost:8002/api/documents/9268378f-48c3-488f-91f9-0c1f97134546",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "8002",
+                  "path": ["api", "documents", "9268378f-48c3-488f-91f9-0c1f97134546"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"title\": \"State v. Smith Legal Case\",\n    \"description\": \"Sample legal document for testing\",\n    \"filename\": \"state_smith_v2.pdf\",\n    \"file_size\": 105756,\n    \"file_type\": \"application/pdf\",\n    \"storage_path\": \"documents/123/b963897a-1e13-48b1-b847-f5656534857a/state_smith_v2.pdf\",\n    \"owner_id\": 123,\n    \"tags\": [\"legal\", \"case\", \"sample\"],\n    \"id\": \"9268378f-48c3-488f-91f9-0c1f97134546\",\n    \"created_at\": \"2025-04-15T07:56:16.392443+00:00\",\n    \"updated_at\": \"2025-04-15T07:56:16.615952+00:00\",\n    \"status\": \"parsing_completed\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Document",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "http://localhost:8002/api/documents/{{document_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["api", "documents", "{{document_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Updated State v. Smith Legal Case\",\n    \"description\": \"Updated description for testing\",\n    \"tags\": [\"legal\", \"case\", \"sample\", \"updated\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Update a document's metadata."
+          },
+          "response": [
+            {
+              "name": "Update Document Response",
+              "originalRequest": {
+                "method": "PUT",
+                "url": {
+                  "raw": "http://localhost:8002/api/documents/9268378f-48c3-488f-91f9-0c1f97134546",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "8002",
+                  "path": ["api", "documents", "9268378f-48c3-488f-91f9-0c1f97134546"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"title\": \"Updated State v. Smith Legal Case\",\n    \"description\": \"Updated description for testing\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"title\": \"Updated State v. Smith Legal Case\",\n    \"description\": \"Updated description for testing\",\n    \"filename\": \"state_smith_v2.pdf\",\n    \"file_size\": 105756,\n    \"file_type\": \"application/pdf\",\n    \"storage_path\": \"documents/123/b963897a-1e13-48b1-b847-f5656534857a/state_smith_v2.pdf\",\n    \"owner_id\": 123,\n    \"tags\": [\"legal\", \"case\", \"sample\"],\n    \"id\": \"9268378f-48c3-488f-91f9-0c1f97134546\",\n    \"created_at\": \"2025-04-15T07:56:16.392443+00:00\",\n    \"updated_at\": \"2025-04-15T07:57:33.814788+00:00\",\n    \"status\": \"analyzed\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Document",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "http://localhost:8002/api/documents/{{document_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["api", "documents", "{{document_id}}"]
+            },
+            "description": "Delete a document and its associated data."
+          }
+        },
+        {
+          "name": "Get Document Status",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8002/api/documents/{{document_id}}/status",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["api", "documents", "{{document_id}}", "status"]
+            },
+            "description": "Get the current status of a document."
+          },
+          "response": [
+            {
+              "name": "Get Document Status Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "http://localhost:8002/api/documents/9268378f-48c3-488f-91f9-0c1f97134546/status",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "8002",
+                  "path": ["api", "documents", "9268378f-48c3-488f-91f9-0c1f97134546", "status"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"document_id\": \"9268378f-48c3-488f-91f9-0c1f97134546\",\n    \"status\": \"parsing_completed\",\n    \"description\": \"Document text has been extracted and is ready for analysis\",\n    \"updated_at\": \"2025-04-15T07:56:16.615952+00:00\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Document Status",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "http://localhost:8002/api/documents/{{document_id}}/status?status_value=parsing_completed",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["api", "documents", "{{document_id}}", "status"],
+              "query": [
+                {
+                  "key": "status_value",
+                  "value": "parsing_completed",
+                  "description": "New status value (parsing_completed, analyzed, error, etc.)"
+                }
+              ]
+            },
+            "description": "Update the status of a document."
+          },
+          "response": [
+            {
+              "name": "Update Document Status Response",
+              "originalRequest": {
+                "method": "PUT",
+                "url": {
+                  "raw": "http://localhost:8002/api/documents/bc47eb68-8e01-4ec9-b183-03f1bdf23e4c/status?status_value=parsing_completed",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "8002",
+                  "path": ["api", "documents", "bc47eb68-8e01-4ec9-b183-03f1bdf23e4c", "status"],
+                  "query": [
+                    {
+                      "key": "status_value",
+                      "value": "parsing_completed"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"document_id\": \"bc47eb68-8e01-4ec9-b183-03f1bdf23e4c\",\n    \"status\": \"parsing_completed\",\n    \"description\": \"Document text has been extracted and is ready for analysis\",\n    \"updated_at\": \"2025-04-15T08:02:44.515644+00:00\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Analysis",
+      "item": [
+        {
+          "name": "Analyze Document",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "http://localhost:8002/api/documents/{{document_id}}/analyze",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["api", "documents", "{{document_id}}", "analyze"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "llm_model",
+                  "value": "gpt-4o",
+                  "type": "text",
+                  "description": "LLM model to use for analysis (optional)"
+                }
+              ]
+            },
+            "description": "Analyze a document using an LLM."
+          },
+          "response": [
+            {
+              "name": "Analyze Document Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "http://localhost:8002/api/documents/bc47eb68-8e01-4ec9-b183-03f1bdf23e4c/analyze",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "8002",
+                  "path": ["api", "documents", "bc47eb68-8e01-4ec9-b183-03f1bdf23e4c", "analyze"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"document_id\": \"bc47eb68-8e01-4ec9-b183-03f1bdf23e4c\",\n    \"summary\": \"The Court of Appeals of Ohio affirmed the trial court's decision denying Waymond Brison Smith's motion for plain error analysis. Smith argued that his sentence was modified without his presence and without counsel, violating Crim.R. 43. The court found no merit in Smith's arguments, as the recalculation of his sentence by the Ohio Department of Rehabilitation and Correction (DRC) was in compliance with a Supreme Court decision and did not constitute a modification by the trial court.\",\n    \"entities\": [\"Waymond Brison Smith\", \"State of Ohio\", \"Mathias H. Heck, Jr.\", \"Tristan D. Diegel\", \"Judges: Hanseman, Epley, Huffman\", \"Ohio Department of Rehabilitation and Correction\", \"David Green (victim)\", \"Ohio Supreme Court\", \"State ex rel. Fraley v. Ohio Dept. of Rehab. & Corr.\"],\n    \"risk_factors\": [\"Potential misunderstanding of the legal process by the appellant, leading to unnecessary appeals.\", \"Misinterpretation of the DRC's role in recalculating sentences, which could lead to further legal challenges.\"],\n    \"recommendations\": [\"Ensure that appellants are fully informed of their rights and the legal processes involved in their cases.\", \"Clarify the role of the DRC in sentence recalculations to prevent confusion and unwarranted legal claims.\", \"Consider providing legal counsel to appellants in complex post-conviction proceedings to ensure proper representation and understanding of legal issues.\"],\n    \"model_used\": \"gpt-4o\",\n    \"created_at\": \"2025-04-15T08:04:01.391981\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Document Analysis",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8002/api/documents/{{document_id}}/analysis",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["api", "documents", "{{document_id}}", "analysis"]
+            },
+            "description": "Retrieve the analysis results for a document."
+          },
+          "response": [
+            {
+              "name": "Get Document Analysis Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "http://localhost:8002/api/documents/bc47eb68-8e01-4ec9-b183-03f1bdf23e4c/analysis",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "8002",
+                  "path": ["api", "documents", "bc47eb68-8e01-4ec9-b183-03f1bdf23e4c", "analysis"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"document_id\": \"bc47eb68-8e01-4ec9-b183-03f1bdf23e4c\",\n    \"summary\": \"The Court of Appeals of Ohio affirmed the trial court's decision denying Waymond Brison Smith's motion for plain error analysis. Smith argued that his sentence was modified without his presence and without counsel, violating Crim.R. 43. The court found no merit in Smith's arguments, as the recalculation of his sentence by the Ohio Department of Rehabilitation and Correction (DRC) was in compliance with a Supreme Court decision and did not constitute a modification by the trial court.\",\n    \"entities\": [\"Waymond Brison Smith\", \"State of Ohio\", \"Mathias H. Heck, Jr.\", \"Tristan D. Diegel\", \"Judges: Hanseman, Epley, Huffman\", \"Ohio Department of Rehabilitation and Correction\", \"David Green (victim)\", \"Ohio Supreme Court\", \"State ex rel. Fraley v. Ohio Dept. of Rehab. & Corr.\"],\n    \"risk_factors\": [\"Potential misunderstanding of the legal process by the appellant, leading to unnecessary appeals.\", \"Misinterpretation of the DRC's role in recalculating sentences, which could lead to further legal challenges.\"],\n    \"recommendations\": [\"Ensure that appellants are fully informed of their rights and the legal processes involved in their cases.\", \"Clarify the role of the DRC in sentence recalculations to prevent confusion and unwarranted legal claims.\", \"Consider providing legal counsel to appellants in complex post-conviction proceedings to ensure proper representation and understanding of legal issues.\"],\n    \"model_used\": \"gpt-4o\",\n    \"created_at\": \"2025-04-15T08:04:01.391981\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Chat",
+      "item": [
+        {
+          "name": "Chat with Document",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "http://localhost:8002/api/chat/{{document_id}}/chat",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8002",
+              "path": ["api", "chat", "{{document_id}}", "chat"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"message\": \"What is this document about?\",\n    \"document_id\": \"{{document_id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Chat with a document using a language model."
+          },
+          "response": [
+            {
+              "name": "Chat with Document Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "http://localhost:8002/api/chat/bc47eb68-8e01-4ec9-b183-03f1bdf23e4c/chat",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "8002",
+                  "path": ["api", "chat", "bc47eb68-8e01-4ec9-b183-03f1bdf23e4c", "chat"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"message\": \"What is this document about?\",\n    \"document_id\": \"bc47eb68-8e01-4ec9-b183-03f1bdf23e4c\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "body": "{\n    \"document_id\": \"bc47eb68-8e01-4ec9-b183-03f1bdf23e4c\",\n    \"messages\": [\n        {\n            \"role\": \"user\",\n            \"content\": \"What is this document about?\",\n            \"created_at\": \"2025-04-15T08:04:46.757000\"\n        },\n        {\n            \"role\": \"assistant\",\n            \"content\": \"The document is a legal opinion from the Court of Appeals of Ohio, Second Appellate District, Montgomery County. It concerns the appeal of Waymond Brison Smith, who is appealing pro se from a trial court judgment that denied his \\\"motion requesting plain error analysis.\\\" Smith contends that the trial court erred by modifying his sentence without his presence and without counsel, in violation of Crim.R. 43. He also argues that his sentence was contrary to law because the sentence imposed in the judgment entry differed from what was announced during the sentencing hearing. The court reviews the record and finds Smith's arguments lack merit, affirming the judgment of the trial court. The document also provides background on Smith's prior appeals and legal proceedings related to his case.\",\n            \"created_at\": \"2025-04-15T08:04:46.757000\"\n        },\n        {\n            \"role\": \"user\",\n            \"content\": \"What is this document about?\",\n            \"created_at\": \"2025-04-15T08:06:51.174609\"\n        },\n        {\n            \"role\": \"assistant\",\n            \"content\": \"The document is a legal opinion from the Court of Appeals of Ohio, Second Appellate District, Montgomery County. It concerns the appeal of Waymond Brison Smith, who is appealing pro se from a trial court judgment that denied his \\\"motion requesting plain error analysis.\\\" Smith contends that the trial court erred by modifying his sentence without his presence and without counsel, in violation of Crim.R. 43. He also argues that his sentence was contrary to law because the sentence imposed in the judgment entry differed from what was announced during the sentencing hearing. The court reviews the record and finds Smith's arguments lack merit, affirming the judgment of the trial court. The document also provides background on Smith's prior appeals and legal proceedings related to his case.\",\n            \"created_at\": \"2025-04-15T08:06:51.174613\"\n        }\n    ],\n    \"created_at\": \"2025-04-15T08:06:51.176660\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "document_id",
+      "value": "bc47eb68-8e01-4ec9-b183-03f1bdf23e4c",
+      "type": "string",
+      "description": "ID of a document in the system"
+    }
+  ]
+} 
