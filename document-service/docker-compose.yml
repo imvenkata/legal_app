@@ -1,1 +1,60 @@
- 
+version: '3.8'
+
+services:
+  document-service:
+    build: .
+    ports:
+      - "8002:8000"
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@document-db:5432/document_db
+      - STORAGE_TYPE=local
+      - STORAGE_PATH=/app/uploads
+      - AUTH_SERVICE_URL=http://host.docker.internal:8001
+      - MONGODB_URL=mongodb://document-mongodb:27017
+      - MONGO_DB_NAME=document_service
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - LLM_PROVIDER=openai
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ./:/app
+    depends_on:
+      - document-db
+      - document-storage
+      - document-mongodb
+    command: uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
+
+  document-db:
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=document_db
+    volumes:
+      - document-db-data:/var/lib/postgresql/data
+
+  document-storage:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    volumes:
+      - document-storage-data:/data
+    command: server /data --console-address ":9001"
+
+  document-mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - document-mongodb-data:/data/db
+
+volumes:
+  document-db-data:
+  document-storage-data:
+  document-mongodb-data: 
