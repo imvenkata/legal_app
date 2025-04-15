@@ -1,39 +1,121 @@
-.qodo
-/venv/
-/venv_search/
-legal_search_service/data/
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
-.env
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.pytest_cache/
+.coverage
+htmlcov/
 
-# Node modules and cache
+# Virtual Environment
+venv/
+venv_search/
+ENV/
+env/
+.env
+.venv
+env.bak/
+venv.bak/
+
+# Node
 node_modules/
 **/node_modules/
-**/.cache/
-**/default-development/
-*.pack
-
-# Large files
-*.zip
-frontend.zip
-
-# IDE and editor files
-.idea/
-.vscode/
-*.swp
-*.swo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.npm
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
 
 # Environment files
 .env
 .env.local
 .env.*.local
+.env.development
+.env.test
+.env.production
+**/.env
+**/.env.*
 
-# Build outputs
-dist/
-build/
-*.log
+# IDE and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-workspace
+*.sublime-project
 
-# OS files
+# OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+
+# Build and cache
+**/.cache/
+**/dist/
+**/build/
+*.log
+.cache/
+.next/
+out/
+.nuxt/
+.vuepress/dist
+.serverless/
+.fusebox/
+.dynamodb/
+
+# Service specific
+legal_search_service/data/
+.qodo
+frontend.zip
+**/node_modules/.cache/
+**/default-development/
+*.pack
+
+# Database
+*.sqlite3
+*.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+.nyc_output/
+coverage/
+*.lcov
