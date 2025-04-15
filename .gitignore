@@ -7,25 +7,33 @@ __pycache__/
 *$py.class
 .env
 
-# Node.js
+# Node modules and cache
 node_modules/
-.npm
-*.log
-frontend/node_modules/
-frontend/.cache/
-frontend/build/
-frontend/dist/
+**/node_modules/
+**/.cache/
+**/default-development/
+*.pack
 
-# IDE
-.vscode/
+# Large files
+*.zip
+frontend.zip
+
+# IDE and editor files
 .idea/
+.vscode/
 *.swp
 *.swo
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+build/
+*.log
 
 # OS files
 .DS_Store
 Thumbs.db
-
-# Large files
-frontend/node_modules/.cache/
-frontend.zip
